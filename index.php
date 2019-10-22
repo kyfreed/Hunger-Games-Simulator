@@ -14,6 +14,12 @@ and open the template in the editor.
     <body>
         <h1>Hunger Games Simulator</h1>
         <h4>Inspired by BrantSteele</h4>
-        <button class="btn btn-primary">Start</button>
+        <form action="cast.php" method="get">
+            Enter cast size to be generated:&nbsp;
+            <input type="number" id="castSize" name="castSize">
+            <br>
+            <br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
     </body>
 </html>
