@@ -1,6 +1,6 @@
 @font-face{
   font-family:'AntartidaRD Ess';
-  src: url('AntartidaRDEss-Light.ttf')
+  src: url('AntartidaRDEss-Light.ttf');
 }
 body,button{
   font-family:'AntartidaRD Ess'
