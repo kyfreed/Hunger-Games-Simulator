@@ -24,6 +24,7 @@
         $tempObject->inventory = [];
         array_push($castObject,clone $tempObject);
     }
+    setcookie("castObject", json_encode($castObject));
 ?>
   <body>
     <div class="text-center">
@@ -59,10 +60,6 @@
         </div>
     </div>
   <div class="text-center">
-      <form action="bloodbath.php" method="post">
-      <input type="hidden" name="bloodbath" value="run"> 
-      <input type="hidden" name="castObject" value='<?=json_encode($_POST)?>'>
-      <button type="submit" class="btn btn-primary">Start</button>
-      </form>
+      <button type="button" class="btn btn-primary" onclick="window.location = 'bloodbath.php';">Start</button>
   </div>
   </body>

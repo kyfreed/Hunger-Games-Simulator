@@ -1,24 +1,13 @@
 <link rel="stylesheet" type="text/css" href="index.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <?php
-$initialCastObject = json_decode($_POST['castObject']);
-$castSize = count(get_object_vars($initialCastObject)) / 6;
-$castObject = [];
-for($i = 1; $i <= $castSize; $i++){
-    $tempObject->gender = $initialCastObject->{"castGender" . $i};
-    $tempObject->disposition = (int) $initialCastObject->{"castDisposition" . $i};
-    $tempObject->strength = (int) $initialCastObject->{"castStrength" . $i};
-    $tempObject->image = $initialCastObject->{"castImage" . $i};
-    $tempObject->name = $initialCastObject->{"castName" . $i};
-    $tempObject->nick = $initialCastObject->{"castNick" . $i};
-    $tempObject->status = "Alive";
-    $tempObject->actionTaken = False;
-    $tempObject->daysOfFood = 0;
-    $tempObject->daysOfWater = 0;
-    $tempObject->desiredItems = [];
-    $tempObject->inventory = [];
-    array_push($castObject,clone $tempObject);
+function print_r2($val){ //Prints an object to the page in a readable format.
+        echo '<pre>';
+        print_r($val);
+        echo  '</pre>';
 }
+$castObject = json_decode($_COOKIE['castObject']);
+$castSize = count($castObject);
 function hasDuplicateHighs($array){ //Checks if an array has two or more high values.
         $dupe_array = array();
         foreach ($array as $val) {
