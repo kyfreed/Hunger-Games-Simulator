@@ -42,7 +42,7 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
                   unset($fightArray[0]->desiredItems[array_search($i, $fightArray[0]->desiredItems)]);
                   array_push($fightArray[0]->inventory,$items[$i]);
                   array_push($events, $fightArray[0]->nick . " grabs " . $items[$i] . ".<br><br>");
-                  $events .= addItemToInventory($items[$i], $strongestCharacter);
+//                  $events .= addItemToInventory($items[$i], $strongestCharacter);
               } else {
                   $strengthsArray = [];
                   foreach($fightArray as $fighter){
@@ -74,7 +74,7 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
                     unset($strongestCharacter->desiredItems[array_search($i, $strongestCharacter->desiredItems)]);
                     array_push($strongestCharacter->inventory,$items[$i]);
                     array_push($events, $strongestCharacter->nick . " fights ". nameList($otherFighters) ." to get " . $items[$i] . ".<br><br>");
-                    $events .= addItemToInventory($items[$i], $strongestCharacter);
+//                    $events .= addItemToInventory($items[$i], $strongestCharacter);
               }
               unset($fightArray);
               foreach($otherFighters as $fighter){
