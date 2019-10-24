@@ -13,6 +13,7 @@
         $tempObject->gender = $_POST["castGender" . $i];
         $tempObject->disposition = (int) $_POST["castDisposition" . $i];
         $tempObject->strength = (int) $_POST["castStrength" . $i];
+        $temObject->modifiedStrength = (int) $_POST["castStrength" . $i];
         $tempObject->image = $_POST["castImage" . $i];
         $tempObject->name = $_POST["castName" . $i];
         $tempObject->nick = $_POST["castNick" . $i];
