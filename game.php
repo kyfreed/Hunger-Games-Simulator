@@ -26,32 +26,8 @@
         print_r($val);
         echo  '</pre>';
 }
-  
-      if(!isset($_COOKIE['castObject'])){
-          $castSize=count($_POST)/8;
-          $castObject = [];
-          for($i = 1; $i <= $castSize; $i++){
-            $tempObject->gender = $_POST["castGender" . $i];
-            $tempObject->disposition = (int) $_POST["castDisposition" . $i];
-            $tempObject->strength = (int) $_POST["castStrength" . $i];
-            $tempObject->modifiedStrength = (int) $_POST["castStrength" . $i] / 5;
-            $tempObject->defense = 0;
-            $tempObject->image = $_POST["castImage" . $i];
-            $tempObject->name = $_POST["castName" . $i];
-            $tempObject->nick = $_POST["castNick" . $i];
-            $tempObject->status = "Alive";
-            $tempObject->actionTaken = False;
-            $tempObject->daysOfFood = 0;
-            $tempObject->daysOfWater = 0;
-            $tempObject->desiredItems = [];
-            $tempObject->inventory = [];
-            array_push($castObject,clone $tempObject);
-          }
-          setcookie("castObject", json_encode($castObject), 0, '/', 'hungergames.kylefreed.com', FALSE, FALSE);
-      } else {
           $castObject = json_decode($_COOKIE['castObject']);
           $castSize = count($castObject);
-      }
 ?>
   <body>
     <div class="text-center">
