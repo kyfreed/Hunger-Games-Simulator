@@ -13,17 +13,29 @@ and open the template in the editor.
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+        <script>
+            function createCast(){
+                document.cookie = "castObject=" + $("#castObject").val();
+                window.location = "game.php";
+            }
+        </script>
         <title>Hunger Games Simulator</title>
     </head>
     <body>
         <h1>Hunger Games Simulator</h1>
-        <h4>Inspired by BrantSteele</h4>
+        <h4>Inspired by <a href="http://brantsteele.net/hungergames">BrantSteele</a></h4>
         <form action="cast.php" method="get">
             Enter cast size to be generated:&nbsp;
             <input type="number" id="castSize" name="castSize">
             <br>
             <br>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Edit cast</button>
         </form>
+        <br>
+            Or, paste cast data here:
+            <br>
+            <textarea id="castObject" name="castObject" rows="25" cols="25"></textarea>
+            <br>
+            <button type="button" class="btn btn-success" onclick="createCast()">Go!</button>
     </body>
 </html>

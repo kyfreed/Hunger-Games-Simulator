@@ -4,7 +4,29 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
-<form action="game.php" method="post">
+  <script>
+      document.cookie = "castObject=; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
+      var cookie;
+      function next(){
+          $.ajax({
+              url: "construct.php",
+              async: false,
+              method: "POST",
+              data: $("#castForm").serialize(),
+              dataType: "json",
+              success: function(castCookie){
+                  cookie = castCookie;
+              },
+              error: function(jqXHR, textStatus, errorThrown){
+                  console.log(textStatus);
+                  console.log(errorThrown);
+              }
+          });
+          document.cookie = "castObject=" + JSON.stringify(cookie);
+          window.location = "game.php";
+      }
+  </script>
+<form action="construct.php" method="post" id="castForm">
 <?php
     $castSize = $_GET['castSize'];
     for($i = 1; $i <= $castSize; $i+=3){
@@ -38,8 +60,14 @@
                 Strength (1-10):&nbsp;
                 <input type="number" name="castStrength<?=$i?>">
                 <br>
+                Dexterity (1-10):&nbsp;
+                <input type="number" name="castDex<?=$i?>">
+                <br>
+                Intelligence (1-10):&nbsp;
+                <input type="number" name="castInt<?=$i?>">
+                <br>
                 Image URL:&nbsp;
-                <input type="text" name="castImage<?=$i?>"
+                <input type="text" name="castImage<?=$i?>">
                 <br>
                 <br>
             </div>
@@ -72,6 +100,12 @@
                 <br>
                 Strength (1-10):&nbsp;
                 <input type="number" name="castStrength<?=$i+1?>">
+                <br>
+                Dexterity (1-10):&nbsp;
+                <input type="number" name="castDex<?=$i+1?>">
+                <br>
+                Intelligence (1-10):&nbsp;
+                <input type="number" name="castInt<?=$i+1?>">
                 <br>
                 Image URL:&nbsp;
                 <input type="text" name="castImage<?=$i+1?>"
@@ -111,6 +145,12 @@
                 Strength (1-10):&nbsp;
                 <input type="number" name="castStrength<?=$i+2?>">
                 <br>
+                Dexterity (1-10):&nbsp;
+                <input type="number" name="castDex<?=$i+2?>">
+                <br>
+                Intelligence (1-10):&nbsp;
+                <input type="number" name="castInt<?=$i+2?>">
+                <br>
                 Image URL:&nbsp;
                 <input type="text" name="castImage<?=$i+2?>">
                 <br>
@@ -125,6 +165,6 @@
     }
 ?>
     <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-primary" onclick="next()">Submit</button>
     </div>
 </form>

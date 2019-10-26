@@ -1,13 +1,13 @@
 <link rel="stylesheet" type="text/css" href="index.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <?php
+$castObject = json_decode($_COOKIE['castObject']);
+$castSize = count($castObject);
 function print_r2($val){ //Prints an object to the page in a readable format.
         echo '<pre>';
         print_r($val);
         echo  '</pre>';
 }
-$castObject = json_decode($_COOKIE['castObject']);
-$castSize = count($castObject);
 function hasDuplicateHighs($array){ //Checks if an array has two or more high values.
         $dupe_array = array();
         foreach ($array as $val) {
@@ -41,12 +41,12 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
               } else if (count($fightArray) == 1){ //If only one person wants this item, give it to them.
                   unset($fightArray[0]->desiredItems[array_search($i, $fightArray[0]->desiredItems)]);
                   array_push($fightArray[0]->inventory,$items[$i]);
-                  array_push($events, $fightArray[0]->nick . " grabs " . $items[$i] . ".<br><br>");
-//                  $events .= addItemToInventory($items[$i], $strongestCharacter);
+                  array_push($events, $fightArray[0]->nick . " grabs " . ((in_array(substr($items[$i], 0,1), ["a", "e", "i", "o"])) ? "an " : "a ") . $items[$i] . ".<br><br>" . addItemToInventory($items[$i], $fightArray[0]));
+            $fightArray[0]->modifiedStrength = calculateModifiedStrength($fightArray[0]);
               } else {
                   $strengthsArray = [];
                   foreach($fightArray as $fighter){
-                      array_push($fighter->modifiedStrength, $strengthsArray);
+                      array_push($strengthsArray, $fighter->modifiedStrength);
                   }
                   if(!hasDuplicateHighs($strengthsArray)){
                     $strongestCharacter = strongestCharacter($fightArray);
@@ -65,23 +65,26 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
                     foreach($fightArray as $fighter){
                         if($fighter->modifiedStrength == max($strengthsArray)){
                             $fighter->strength -= (count($fightArray) / 2);
-                            calculateModifiedStrength($fighter);
+                            $fighter->modifiedStrength = calculateModifiedStrength($fighter);
                         } else {
                             $fighter->strength -= $strongestCharacter->modifiedStrength - $fighter->modifiedStrength;
-                            calculateModifiedStrength($fighter);
+                            //echo $fighter->nick . "'s strength is now " . $fighter->strength . ".<br><br>";
+                            $fighter->modifiedStrength = calculateModifiedStrength($fighter);
                         }
                     }
                     unset($strongestCharacter->desiredItems[array_search($i, $strongestCharacter->desiredItems)]);
+                    $strongestCharacter->desiredItems = array_values($strongestCharacter->desiredItems);
                     array_push($strongestCharacter->inventory,$items[$i]);
-                    array_push($events, $strongestCharacter->nick . " fights ". nameList($otherFighters) ." to get " . $items[$i] . ".<br><br>");
-//                    $events .= addItemToInventory($items[$i], $strongestCharacter);
+                    array_push($events, $strongestCharacter->nick . " attacks ". nameList($otherFighters) ." and steals the " . $items[$i] . " that they were " . (count($fightArray) == 2 ? "both" : "all") ." fighting over.<br><br>" . addItemToInventory($items[$i], $strongestCharacter));
               }
-              unset($fightArray);
               foreach($otherFighters as $fighter){
                   if($fighter->strength < 0){
                       array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
+                      $fighter->status = "Dead";
+                      unset($fighter->desiredItems);
                   }
               }
+              unset($fightArray);
               unset($otherFighters);
           }
           return $events;
@@ -100,21 +103,35 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
               return $listString;
           }
       }
+      function series($array){
+          if(count($array) == 1){
+              return $array[0];
+          } else if (count($array) == 2){
+              return $array[0] . " and " . $array[1];
+          } else {
+              $listString = '';
+              for($i = 0; $i < count($array) - 1; $i++){
+                  $listString .= $array[$i] . ", ";
+              }
+              $listString .= "and " . end($array);
+              return $listString;
+          }
+      }
       function initializeItems(){
           global $castSize;
           $items = [];
           for($i = 0; $i < 1.5 * $castSize; $i++){
-              array_push($items,"a day's worth of rations");
-              array_push($items,"a canteen");
+              array_push($items,"day's worth of rations");
+              array_push($items,"canteen");
           }
           for($i = 0; $i < round($castSize); $i++){
-              array_push($items,"a knife");
-              array_push($items,"a bow and a quiver of arrows");
+              array_push($items,"knife");
+              array_push($items,"bow and quiver");
           }
           for($i = 0; $i < round(0.5 * $castSize); $i++){
-              array_push($items,"a backpack");
-              array_push($items,"a mace");
-              array_push($items,"an axe");
+              array_push($items,"backpack");
+              array_push($items,"mace");
+              array_push($items,"axe");
           }
           shuffle($items);
           return $items;
@@ -160,33 +177,54 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
           return -1;
       }
       function addItemToInventory($item, $character){
-          calculateModifiedStrength($character);
           $events = '';
-          if($item == "a backpack"){
+          if($item == "backpack"){
               $events .= fillBackpack($character);
           }
+          if($item == "day's worth of rations"){
+              $character->daysOfFood++;
+          }
+          if($item == "canteen"){
+              $character->daysOfWater++;
+          }
+          $character->modifiedStrength = calculateModifiedStrength($character);
           return $events;
       }
       function fillBackpack($character){
-          $possibleItems = array("a knife", "a canteen", "some fishing gear", "poison");
+          $possibleItems = array("a knife", "a canteen", "fishing gear", "poison");
           $contents = [];
           for($i = 0; $i < round(rand(0, 5));$i++){
               array_push($contents, $possibleItems[round(rand(0, count($possibleItems)-1))]);
           }
           array_push($character->inventory, $contents);
-          return "It contained " . nameList($contents) . ".<br><br>";
+          if(count($contents) == 0){
+              return "It contained nothing.<br><br>";
+          } else{
+              return "It contained " . series($contents) . ".<br><br>";
+          }
           
       }
       function calculateModifiedStrength($character){
-          if(in_array("a bow and a quiver of arrows", $character->inventory)){
-              return 1.5;
+          $arrowDamage = round(rand(0.75, 1.75), 2);
+          if($character->strength < $arrowDamage && in_array("bow and quiver", $character->inventory)){
+              return $arrowDamage;
           }
-          if(in_array("a knife", $character->inventory)){
-              return 3;
+          if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
+              $knives = 0;
+              foreach ($character->inventory as $value) {
+                  if(strpos("knife", $value) !== false){
+                      $knives++;
+                  }
+              }
+              if(knives > 1){
+                  return 4.8;
+              }
+              return 2.4;
           }
-          if(in_array("an axe", $character->inventory) || in_array("a mace", $character->inventory)){
+          if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
               return $character->strength + 5;
           }
+          return $character->strength / 5;
       }
         $items = initializeItems();
           foreach($castObject as $character){
@@ -201,4 +239,13 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
 </div>
           <?php
           showEvents($events);
-
+          ?>
+          <div class="text-center">
+              <button class="btn btn-primary" onclick="next()">Continue</button>
+          </div>
+<script>
+    function next(){
+        document.cookie = "castObject=" + JSON.stringify(<?= json_encode($castObject)?>);
+        window.location = 'day.php';
+    }
+</script>

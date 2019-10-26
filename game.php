@@ -1,5 +1,25 @@
 <link rel="stylesheet" type="text/css" href="index.css">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">  
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+<script>
+    function showCastData(){
+        var name = "castObject=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                $("#castObject").val(c.substring(name.length, c.length));
+            }
+        }
+    }
+</script>
 <?php
   function print_r2($val){ //Prints an object to the page in a readable format.
         echo '<pre>';
@@ -7,25 +27,31 @@
         echo  '</pre>';
 }
   
-      $castSize=count($_POST)/6;
-      $castObject = [];
-      for($i = 1; $i <= $castSize; $i++){
-        $tempObject->gender = $_POST["castGender" . $i];
-        $tempObject->disposition = (int) $_POST["castDisposition" . $i];
-        $tempObject->strength = (int) $_POST["castStrength" . $i];
-        $temObject->modifiedStrength = (int) $_POST["castStrength" . $i];
-        $tempObject->image = $_POST["castImage" . $i];
-        $tempObject->name = $_POST["castName" . $i];
-        $tempObject->nick = $_POST["castNick" . $i];
-        $tempObject->status = "Alive";
-        $tempObject->actionTaken = False;
-        $tempObject->daysOfFood = 0;
-        $tempObject->daysOfWater = 0;
-        $tempObject->desiredItems = [];
-        $tempObject->inventory = [];
-        array_push($castObject,clone $tempObject);
-    }
-    setcookie("castObject", json_encode($castObject));
+      if(!isset($_COOKIE['castObject'])){
+          $castSize=count($_POST)/8;
+          $castObject = [];
+          for($i = 1; $i <= $castSize; $i++){
+            $tempObject->gender = $_POST["castGender" . $i];
+            $tempObject->disposition = (int) $_POST["castDisposition" . $i];
+            $tempObject->strength = (int) $_POST["castStrength" . $i];
+            $tempObject->modifiedStrength = (int) $_POST["castStrength" . $i] / 5;
+            $tempObject->defense = 0;
+            $tempObject->image = $_POST["castImage" . $i];
+            $tempObject->name = $_POST["castName" . $i];
+            $tempObject->nick = $_POST["castNick" . $i];
+            $tempObject->status = "Alive";
+            $tempObject->actionTaken = False;
+            $tempObject->daysOfFood = 0;
+            $tempObject->daysOfWater = 0;
+            $tempObject->desiredItems = [];
+            $tempObject->inventory = [];
+            array_push($castObject,clone $tempObject);
+          }
+          setcookie("castObject", json_encode($castObject), 0, '/', 'hungergames.kylefreed.com', FALSE, FALSE);
+      } else {
+          $castObject = json_decode($_COOKIE['castObject']);
+          $castSize = count($castObject);
+      }
 ?>
   <body>
     <div class="text-center">
@@ -62,5 +88,11 @@
     </div>
   <div class="text-center">
       <button type="button" class="btn btn-primary" onclick="window.location = 'bloodbath.php';">Start</button>
+      <br>
+      <br>
+      <textarea id="castObject" rows="25" cols="25" readonly></textarea>
+      <br>
+      <br>
+      <button type="button" class="btn btn-primary" onclick="showCastData()">Show cast data</button>
   </div>
   </body>
