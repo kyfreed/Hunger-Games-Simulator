@@ -4,7 +4,8 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
-<div class="text-center"> 
+<div class="text-center">
+<title>Hunger Games Simulator</title>
 <h1>Dead Tributes <?=$_COOKIE['counter']?></h1>
 <?php
 function print_r2($val){ //Prints an object to the page in a readable format.
@@ -37,4 +38,3 @@ foreach ($deadToday as $nick){
 ?>
     <button type="button" class="btn btn-primary" onclick="window.location = 'night.php';">Continue</button>  
 </div>
-

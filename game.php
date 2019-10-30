@@ -9,6 +9,7 @@
             $("#castObject").val(<?= json_encode(file_get_contents($_COOKIE['castObjectFile']))?>);
     }
 </script>
+<title>Hunger Games Simulator</title>
 <?php
   function print_r2($val){ //Prints an object to the page in a readable format.
         echo '<pre>';

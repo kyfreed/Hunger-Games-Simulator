@@ -4,6 +4,25 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+  <title>Hunger Games Simulator</title>
+  <div class="text-center">
+      <h1>The Winner</h1>
 <?php
-
+$castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
+foreach ($castObject as $character) {
+    if($character->status == "Alive"){
+        $winner = $character;
+    }
+}
+$image = imagecreatefrompng($winner->image);
+ob_start();
+imagepng($image);
+$imagedata = ob_get_contents();
+ob_end_clean();
+echo '<img src="data:image/png;base64,'.base64_encode($imagedata).'"/ width="90" height="90"><br><br>';
+echo $winner->nick . " is the winner!<br><br>";
+?>
+      <button type="button" class="btn btn-primary" onclick="window.location = 'index.php'">Return to Home Screen</button>
+  </div>
+  
 

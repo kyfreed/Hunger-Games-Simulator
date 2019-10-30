@@ -38,7 +38,7 @@ and open the template in the editor.
     </head>
     <body>
         <h1>Hunger Games Simulator</h1>
-        <h4>Inspired by <a href="http://brantsteele.net/hungergames">BrantSteele</a></h4>
+        <h4>Inspired by <a href="http://brantsteele.net/hungergames" target="_blank">BrantSteele</a></h4>
         <form action="cast.php" method="get">
             Enter cast size to be generated:&nbsp;
             <input type="number" id="castSize" name="castSize">
@@ -47,7 +47,7 @@ and open the template in the editor.
             <button type="submit" class="btn btn-primary">Edit cast</button>
         </form>
         <br>
-            Or, paste cast data here:
+        <p>Or, paste cast data here:</p>
             <br>
             <textarea id="castObject" name="castObject" rows="25" cols="25"></textarea>
             <br>

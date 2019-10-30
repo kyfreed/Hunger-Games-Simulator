@@ -4,6 +4,7 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+  <title>Hunger Games Simulator</title>
 <?php
 setcookie("deadToday", "", time() - 3600);
 setcookie("counter", "1");
@@ -215,10 +216,6 @@ function avg_strength($array){
           
       }
       function calculateModifiedStrength($character){
-          $arrowDamage = round(f_rand(0.75, 1.75), 2);
-          if($character->strength < $arrowDamage && in_array("bow and quiver", $character->inventory)){
-              return $arrowDamage;
-          }
           if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
               $knives = 0;
               foreach ($character->inventory as $value) {

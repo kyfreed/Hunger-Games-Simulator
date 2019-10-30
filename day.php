@@ -4,6 +4,7 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+  <title>Hunger Games Simulator</title>
   <div class="text-center">
       <h1>Day <?=$_COOKIE['counter']?></h1>
   </div>
@@ -22,11 +23,34 @@ function print_r2($val){ //Prints an object to the page in a readable format.
         print_r($val);
         echo  '</pre>';
 }
+function beginningOfDay($character){
+    $event = '';
+        if($character->daysOfFood == 0){
+            $character->daysWithoutFood++;
+        } else {
+            $character->daysOfFood--;
+        }
+        if($character->daysWithoutFood > 1){
+            $character->strength--;
+            if($character->strength < 0){
+                $events .= $character->nick . " starves to death.<br><br>";
+                $character->status = "Dead";
+                array_push($GLOBALS['deadToday'], $character->nick);
+            }
+        }
+        if($character->daysOfWater == 0){
+            $character->strength -= 1.5;
+            if($character->strength < 0){
+                $events .= $character->nick . " dies of thirst.<br><br>";
+                $character->status = "Dead";
+                array_push($GLOBALS['deadToday'], $character->nick);
+            }
+        } else {
+        $character->daysOfWater++;
+        }
+    return $event;
+}
 function calculateModifiedStrength($character){
-          $arrowDamage = round(f_rand(0.75, 1.75), 2);
-          if($character->strength < $arrowDamage && in_array("bow and quiver", $character->inventory)){
-              return $arrowDamage;
-          }
           if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
               $knives = 0;
               foreach ($character->inventory as $value) {
@@ -84,20 +108,39 @@ function firstAfter($sub, $array,$string){
     }
     return -1;
 }
+function lookForWater($character){
+    $event = $character->nick . " goes searching for water.<br><br>" . (($character->gender == "m") ? "He" : "She");
+    if((0.05 * $character->intelligence) + 0.4 > f_rand()){
+        $character->daysOfWater++;
+        $event .= " finds a water source and drinks from it.<br><br>";
+        if(in_array("canteen", $character->inventory)){
+            $canteens = array_count_values($character->inventory)["canteen"];
+            $event .= (($character->gender == "m") ? "He" : "She") . " also fills " . (($character->gender == "m") ? "his" : "her") . " canteen" . (($canteens == 1) ? "" : "s") . ".<br><br>";
+            $character->daysOfWater += $canteens;
+        }
+    } else {
+        $event .= " doesn't find any.<br><br>";
+    }
+    return $event;
+}
 function lookForFood($character){
     $event = $character->nick . " goes searching for food.<br><br>" . (($character->gender == "m") ? "He" : "She");
     $shootChance = f_rand();
     if(in_array("bow and quiver", $character->inventory) && $character->arrows > 0){
         $event .= " attempts to shoot a wild animal.<br><br>" . (($character->gender == "m") ? "He" : "She");
-        if($shootChance > 0.12 * $character->dexterity){
+        if(0.12 * $character->dexterity > $shootChance){
             $foodGain = rand(2, 5);
             $event .= " is successful. " . (($character->gender == "m") ? "He" : "She") . " gains " . $foodGain . " days' worth of food.<br><br>";
+            $character->daysOfFood += $foodGain;
+            $character->daysWithoutFood = 0;
+            
         } else {
             $event .= " misses.<br><br>";
         }
     } else {
         if((0.05 * $character->intelligence) + 0.4 > f_rand()){
         $character->daysOfFood++;
+        $character->daysWithoutFood = 0;
         $event .= " finds some wild fruit and gains a day's worth of food.<br><br>";
         } else {
             $event .= " doesn't find any.<br><br>";
@@ -108,7 +151,7 @@ function lookForFood($character){
 function attackPlayer($character, $target){
     $event = '';
     $event .= $character->nick . " attempts to attack " . $target->nick . ".<br><br>";
-    if(in_array("bow and quiver", $character->inventory) && $character->arrows > 0){
+    if(in_array("bow and quiver", $character->inventory) && $character->arrows > 0 && $character->strength <= 2.4){
         $event .= $character->nick . " lets loose an arrow!<br><br>";
         $character->arrows--;
         if($character->dexterity * 0.12 > f_rand()){
@@ -122,7 +165,7 @@ function attackPlayer($character, $target){
             $event .= "However, it does not connect.<br><br>";
             if(0.3 * ($target->disposition-2) > f_rand()){
                 $event .= $target->nick . " prepares to retaliate!<br><br>";
-                if(0.04 * $target->dexterity + 0.7 < f_rand() || 0.04 * $character->dexterity + 0.3 > f_rand()){
+                if(0.04 * $target->dexterity + 0.75 < f_rand() || 0.04 * $character->dexterity + 0.25 > f_rand()){
                     $event .= "Unfortunately, this fails as well.<br><br>";
                 } else {
                     $event .= (($target->gender == "m") ? "He" : "She") . " is successful in doing so.<br><br>";
@@ -144,7 +187,6 @@ function attackPlayer($character, $target){
 //        $target->status = "Dead";
 //        array_push($GLOBALS['deadToday'], $target->nick);
 //    }
-    setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
     return $event;
 }
 function action($character){
@@ -166,6 +208,10 @@ function action($character){
             $character->actionTaken = "true";
             $target->actionTaken = "true";
             break;
+        case "look for water":
+            $event .= lookForWater($character);
+            $character->actionTaken = "true";
+            break;
     }
     return $event;
 }
@@ -173,6 +219,7 @@ function getPossibleActions($character){
     $actions = [];
     if($character->actionTaken == "false"){
         array_push($actions, "look for food");
+        array_push($actions, "look for water");
     }
     if($character->actionTaken == "false" && $character->disposition >= 3){
         array_push($actions, "attack another player");
@@ -181,13 +228,29 @@ function getPossibleActions($character){
     return $actions;
 }
 function weightedActionChoice($character, $actions){
-    if(in_array("attack another player", $actions) && 0.3 * ($character->disposition-2) > f_rand()){
+    if($character->daysOfFood < 2){
+        return "look for food";
+    } else if ($character->daysOfWater < 2){
+        return "look for water";
+    } else if(in_array("attack another player", $actions) && 0.3 * ($character->disposition-2) > f_rand()){
         return "attack another player";
     } else {
-        return "look for food";
+        if(($character->daysOfWater/$character->daysOfFood) * 0.5 > f_rand()){
+            return "look for food";
+        } else {
+            return "look for water";
+        }
     }
 }
           $events = [];
+           foreach($GLOBALS['castObject'] as $character){
+               if($character->status == "Alive"){
+                   $beginning = beginningOfDay($character);
+                   if($beginning != ''){
+                       array_push($events, $beginning);
+                   }
+               }
+           }
           foreach($GLOBALS['castObject'] as $character){
               if($character->actionTaken == "false" && $character->status == "Alive"){
                   array_push($events, action($character));
@@ -199,6 +262,7 @@ function weightedActionChoice($character, $actions){
                   array_push($GLOBALS['deadToday'], $fighter->nick);
                 }
               }
+              setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
           }
           //print_r2($events);
           showEvents($events);

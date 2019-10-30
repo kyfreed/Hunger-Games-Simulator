@@ -25,6 +25,7 @@
           window.location = "game.php";
       }
   </script>
+  <title>Hunger Games Simulator</title>
 <form action="construct.php" method="post" id="castForm">
 <?php
     $castSize = $_GET['castSize'];

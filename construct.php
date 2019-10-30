@@ -25,8 +25,8 @@
             $tempObject->nick = $_POST["castNick" . $i];
             $tempObject->status = "Alive";
             $tempObject->actionTaken = FALSE;
-            $tempObject->daysOfFood = 0;
-            $tempObject->daysOfWater = 0;
+            $tempObject->daysOfFood = 1;
+            $tempObject->daysOfWater = 1;
             $tempObject->desiredItems = [];
             $tempObject->inventory = [];
             array_push($castObject,clone $tempObject);
@@ -34,4 +34,3 @@
           $filename = "castObject" . randomDigits() . ".txt";
           file_put_contents($filename, json_encode($castObject));
 echo $filename;
-
