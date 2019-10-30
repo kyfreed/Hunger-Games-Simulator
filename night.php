@@ -5,9 +5,10 @@
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
   <div class="text-center">
-      <h1>Day <?=$_COOKIE['counter']?></h1>
+      <h1>Night <?=$_COOKIE['counter']?></h1>
   </div>
 <?php
+setcookie("counter", ((int) $_COOKIE['counter']) + 1, 0, "/");
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
           shuffle($castObject);
           //print_r2($castObject);
@@ -203,7 +204,7 @@ function weightedActionChoice($character, $actions){
           //print_r2($events);
           showEvents($events);
           $playersAlive = 0;
-          $nextDestination = 'deadTributes.php';
+          $nextDestination = 'day.php';
           foreach($castObject as $character){
               $character->actionTaken = "false";
               if($character->status == "Alive"){

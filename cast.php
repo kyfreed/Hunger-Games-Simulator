@@ -5,7 +5,6 @@
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
   <script>
-      document.cookie = "castObject=; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
       var cookie;
       function next(){
           $.ajax({
@@ -13,7 +12,7 @@
               async: false,
               method: "POST",
               data: $("#castForm").serialize(),
-              dataType: "json",
+              dataType: "text",
               success: function(castCookie){
                   cookie = castCookie;
               },
@@ -22,7 +21,7 @@
                   console.log(errorThrown);
               }
           });
-          document.cookie = "castObject=" + JSON.stringify(cookie);
+          document.cookie = "castObjectFile=" + cookie;
           window.location = "game.php";
       }
   </script>
@@ -66,6 +65,9 @@
                 Intelligence (1-10):&nbsp;
                 <input type="number" name="castInt<?=$i?>">
                 <br>
+                Charisma (1-10):&nbsp;
+                <input type="number" name="castCha<?=$i?>">
+                <br>
                 Image URL:&nbsp;
                 <input type="text" name="castImage<?=$i?>">
                 <br>
@@ -106,6 +108,9 @@
                 <br>
                 Intelligence (1-10):&nbsp;
                 <input type="number" name="castInt<?=$i+1?>">
+                <br>
+                Charisma (1-10):&nbsp;
+                <input type="number" name="castCha<?=$i+1?>">
                 <br>
                 Image URL:&nbsp;
                 <input type="text" name="castImage<?=$i+1?>"
@@ -150,6 +155,9 @@
                 <br>
                 Intelligence (1-10):&nbsp;
                 <input type="number" name="castInt<?=$i+2?>">
+                <br>
+                Charisma (1-10):&nbsp;
+                <input type="number" name="castCha<?=$i+2?>">
                 <br>
                 Image URL:&nbsp;
                 <input type="text" name="castImage<?=$i+2?>">

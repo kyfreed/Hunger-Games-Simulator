@@ -1,37 +1,43 @@
 <link rel="stylesheet" type="text/css" href="index.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
 <?php
-$castObject = json_decode($_COOKIE['castObject']);
+setcookie("deadToday", "", time() - 3600);
+setcookie("counter", "1");
+$deadToday = [];
+$castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
 $castSize = count($castObject);
+function f_rand($min=0,$max=1,$mul=1000000){
+    if ($min>$max) return false;
+    return mt_rand($min*$mul,$max*$mul)/$mul;
+}
 function print_r2($val){ //Prints an object to the page in a readable format.
         echo '<pre>';
         print_r($val);
         echo  '</pre>';
 }
-function hasDuplicateHighs($array){ //Checks if an array has two or more high values.
-        $dupe_array = array();
-        foreach ($array as $val) {
-            if (++$dupe_array[$val] > 1 && max($array) == $val) {
-                return true;
-            }
-        }
-        return false;
-      }
-      function strongestCharacter($characters){ //In an array of characters, return the strongest one.
-          $strongestCharacter = $characters[0];
-          foreach($characters as $character){
-              if($character->modifiedStrength > $strongestCharacter->modifiedStrength){
-                  $strongestCharacter = $character;
-              }
-          }
-          return $strongestCharacter;
-      }
+function removeFromArray($value, $array){
+   $newArray = $array;
+   unset($newArray[array_search($value, $newArray)]);
+   $newArray = array_values($newArray);
+   return $newArray;
+}
+function avg_strength($array){
+    $strengths = [];
+    foreach ($array as $value){
+        array_push($strengths, $value->modifiedStrength);
+    }
+    return array_sum($strengths)/count($strengths);
+}
       function compareItems($items){ //This function loops through all the items and evaluates who gets what.
           global $castObject;
           $events = [];
           for($i = 0; $i < count($items); $i++){ //Go through all items available.
               $fightArray = [];
-              foreach($castObject as $character){
+              foreach($GLOBALS['castObject'] as $character){
                   if(in_array($i, $character->desiredItems)){
                       array_push($fightArray,$character);
                   }
@@ -44,49 +50,47 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
                   array_push($events, $fightArray[0]->nick . " grabs " . ((in_array(substr($items[$i], 0,1), ["a", "e", "i", "o"])) ? "an " : "a ") . $items[$i] . ".<br><br>" . addItemToInventory($items[$i], $fightArray[0]));
             $fightArray[0]->modifiedStrength = calculateModifiedStrength($fightArray[0]);
               } else {
+                  //print_r2($fightArray);
                   $strengthsArray = [];
                   foreach($fightArray as $fighter){
                       array_push($strengthsArray, $fighter->modifiedStrength);
                   }
-                  if(!hasDuplicateHighs($strengthsArray)){
-                    $strongestCharacter = strongestCharacter($fightArray);
-                  } else {
+                  //print_r2($strengthsArray);
+                  
                     $strongestCharacters = [];
                     foreach($fightArray as $fighter){
                         if($fighter->modifiedStrength == max($strengthsArray)){
                             array_push($strongestCharacters, $fighter);
                         }
                     }
-                    $strongestCharacter = ($strongestCharacters[floor(rand(0, count($strongestCharacters)))]);
-                  }
-                    $otherFighters = $fightArray;
-                    unset($otherFighters[array_search($strongestCharacter, $otherFighters)]);
-                    $otherFighters = array_values($otherFighters);
+                    //print_r2($strongestCharacters);
+                    $arrayIndex = floor(rand(0, count($strongestCharacters) - 1));
+                    $strongestCharacter = $strongestCharacters[$arrayIndex];
+                    //print_r2($strongestCharacter);
+                  
+                    $otherFighters = removeFromArray($strongestCharacter, $fightArray);
+                    //print_r2($otherFighters);
                     foreach($fightArray as $fighter){
-                        if($fighter->modifiedStrength == max($strengthsArray)){
-                            $fighter->strength -= (count($fightArray) / 2);
+                            $fighter->strength -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 1.35);
                             $fighter->modifiedStrength = calculateModifiedStrength($fighter);
-                        } else {
-                            $fighter->strength -= $strongestCharacter->modifiedStrength - $fighter->modifiedStrength;
-                            //echo $fighter->nick . "'s strength is now " . $fighter->strength . ".<br><br>";
-                            $fighter->modifiedStrength = calculateModifiedStrength($fighter);
-                        }
                     }
                     unset($strongestCharacter->desiredItems[array_search($i, $strongestCharacter->desiredItems)]);
                     $strongestCharacter->desiredItems = array_values($strongestCharacter->desiredItems);
                     array_push($strongestCharacter->inventory,$items[$i]);
                     array_push($events, $strongestCharacter->nick . " attacks ". nameList($otherFighters) ." and steals the " . $items[$i] . " that they were " . (count($fightArray) == 2 ? "both" : "all") ." fighting over.<br><br>" . addItemToInventory($items[$i], $strongestCharacter));
               }
-              foreach($otherFighters as $fighter){
+              foreach($fightArray as $fighter){
                   if($fighter->strength < 0){
                       array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                       $fighter->status = "Dead";
+                      array_push($GLOBALS['deadToday'], $fighter->nick);
                       unset($fighter->desiredItems);
                   }
               }
               unset($fightArray);
               unset($otherFighters);
           }
+          setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
           return $events;
       }
       function nameList($array){
@@ -124,11 +128,11 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
               array_push($items,"day's worth of rations");
               array_push($items,"canteen");
           }
-          for($i = 0; $i < round($castSize); $i++){
+          for($i = 0; $i < round(0.9 * $castSize); $i++){
               array_push($items,"knife");
               array_push($items,"bow and quiver");
           }
-          for($i = 0; $i < round(0.5 * $castSize); $i++){
+          for($i = 0; $i < round(0.15 * $castSize); $i++){
               array_push($items,"backpack");
               array_push($items,"mace");
               array_push($items,"axe");
@@ -187,6 +191,12 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
           if($item == "canteen"){
               $character->daysOfWater++;
           }
+          if($item == "bow and quiver"){
+              if(!(property_exists($character, "arrows"))){
+                  $character->arrows = 0;
+              }
+              $character->arrows += 20;
+          }
           $character->modifiedStrength = calculateModifiedStrength($character);
           return $events;
       }
@@ -205,7 +215,7 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
           
       }
       function calculateModifiedStrength($character){
-          $arrowDamage = round(rand(0.75, 1.75), 2);
+          $arrowDamage = round(f_rand(0.75, 1.75), 2);
           if($character->strength < $arrowDamage && in_array("bow and quiver", $character->inventory)){
               return $arrowDamage;
           }
@@ -228,7 +238,7 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
       }
         $items = initializeItems();
           foreach($castObject as $character){
-              for($i = 0; $i < round(rand(1.5, 1.75) * $character->disposition); $i++){
+              for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){
                   array_push($character->desiredItems,round(rand(0,count($items)-1)));
               }
           }
@@ -238,14 +248,43 @@ function hasDuplicateHighs($array){ //Checks if an array has two or more high va
     <h1>Bloodbath</h1>
 </div>
           <?php
+          //print_r2($castObject);
           showEvents($events);
           ?>
           <div class="text-center">
               <button class="btn btn-primary" onclick="next()">Continue</button>
           </div>
 <script>
+    function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
     function next(){
-        document.cookie = "castObject=" + JSON.stringify(<?= json_encode($castObject)?>);
-        window.location = 'day.php';
+        $.ajax({
+              url: "editFile.php",
+              async: false,
+              method: "POST",
+              data: "castObject=" + JSON.stringify(<?= json_encode($castObject)?>) + "&fileName=" + getCookie("castObjectFile"),
+              dataType: "text",
+              success: function(castCookie){
+                  cookie = castCookie;
+              },
+              error: function(jqXHR, textStatus, errorThrown){
+                  console.log(textStatus);
+                  console.log(errorThrown);
+              }
+          });
+          window.location = "day.php";
     }
 </script>

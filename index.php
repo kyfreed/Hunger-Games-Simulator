@@ -15,7 +15,22 @@ and open the template in the editor.
   crossorigin="anonymous"></script>
         <script>
             function createCast(){
-                document.cookie = "castObject=" + $("#castObject").val();
+                var cookie;
+                $.ajax({
+                    url: "writeFile.php",
+                    async: false,
+                    method: "POST",
+                    data: $("#castObject").serialize(),
+                    dataType: "text",
+                    success: function(castCookie){
+                        cookie = castCookie;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    }
+                });
+                document.cookie = "castObjectFile=" + cookie;
                 window.location = "game.php";
             }
         </script>

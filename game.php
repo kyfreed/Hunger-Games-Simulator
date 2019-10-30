@@ -6,18 +6,7 @@
   crossorigin="anonymous"></script>
 <script>
     function showCastData(){
-        var name = "castObject=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                $("#castObject").val(c.substring(name.length, c.length));
-            }
-        }
+            $("#castObject").val(<?= json_encode(file_get_contents($_COOKIE['castObjectFile']))?>);
     }
 </script>
 <?php
@@ -26,7 +15,7 @@
         print_r($val);
         echo  '</pre>';
 }
-          $castObject = json_decode($_COOKIE['castObject']);
+          $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
           $castSize = count($castObject);
 ?>
   <body>
