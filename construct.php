@@ -15,7 +15,8 @@
             $tempObject->gender = $_POST["castGender" . $i];
             $tempObject->disposition = (int) $_POST["castDisposition" . $i];
             $tempObject->strength = (int) $_POST["castStrength" . $i];
-            $tempObject->modifiedStrength = (int) $_POST["castStrength" . $i] / 5;
+            $tempObject->maxStrength = $tempObject->strength;
+            $tempObject->modifiedStrength = $tempObject->strength / 5;
             $tempObject->dexterity = (int) $_POST["castDex" . $i];
             $tempObject->intelligence = (int) $_POST["castInt" . $i];
             $tempObject->charisma = (int) $_POST["castCha" . $i];
@@ -24,11 +25,15 @@
             $tempObject->name = $_POST["castName" . $i];
             $tempObject->nick = $_POST["castNick" . $i];
             $tempObject->status = "Alive";
-            $tempObject->actionTaken = FALSE;
+            $tempObject->actionTaken = "false";
             $tempObject->daysOfFood = 1;
+            $tempObject->daysWithoutFood = 0;
             $tempObject->daysOfWater = 1;
             $tempObject->desiredItems = [];
             $tempObject->inventory = [];
+            $tempObject->arrows = 0;
+            $tempObject->explosivesPlanted = 0;
+            $tempObject->memberOfAlliance = -1;
             array_push($castObject,clone $tempObject);
           }
           $filename = "castObject" . randomDigits() . ".txt";

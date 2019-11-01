@@ -1,4 +1,4 @@
-        <link rel="stylesheet" type="text/css" href="index.css">
+        <link rel="stylesheet" type="text/css" href="index.css?v=1.3">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -25,23 +25,27 @@ function print_r2($val){ //Prints an object to the page in a readable format.
         echo  '</pre>';
 }
 function calculateModifiedStrength($character){
-          if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
-              $knives = 0;
-              foreach ($character->inventory as $value) {
-                  if(strpos("knife", $value) !== false){
-                      $knives++;
-                  }
-              }
-              if(knives > 1){
-                  return 4.8;
-              }
-              return 2.4;
-          }
-          if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
-              return $character->strength + 5;
-          }
-          return $character->strength / 5;
-      }
+    $modStr = 0;
+
+    if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
+        $modStr = $character->strength + 5;
+    } else if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
+        $knives = 0;
+        foreach ($character->inventory as $value) {
+            if(strpos("knife", $value) !== false){
+                $knives++;
+            }
+        }
+        if(knives > 1){
+            $modStr = 4.8;
+        } else {
+            $modStr = 2.4;
+        } 
+    } else {
+        $modStr = $character->strength / 5;
+    }
+    return $modStr;
+}
 function showEvents($events){
           global $castObject;
           echo "<div class='text-center'>";
@@ -59,52 +63,35 @@ function showEvents($events){
           echo "</div>";
 }
 function getCharacterByEvent($event){
-          global $castObject;
-          $characterArray = [];
-          foreach($castObject as $character){
-              if(strpos($event, $character->nick) !== false){
-                  if(count($characterArray) == 0 || firstAfter($character->nick, $characterArray, $event) == -1){
-                      array_push($characterArray, $character);
-                  } else {
-                      array_splice($characterArray, 0, 0, array($character));
-                      
-                  }
-              }
-          }
-          return $characterArray;
-      }
-function firstAfter($sub, $array,$string){
+        global $castObject;
+        $characterArray = [];
+        foreach($castObject as $character){
+            if(strpos($event, $character->nick) !== FALSE){
+                if(count($characterArray) == 0 || firstAfter($character->nick, $characterArray, $event) == -1){
+                    array_push($characterArray, $character);
+                } else {
+                    array_splice($characterArray, firstAfter($character->nick, $characterArray, $event), 0, array($character));
+
+                }
+            }
+        }
+        return $characterArray;
+    }
+function firstAfter($sub, $array, $string){
     global $castObject;
+    $index = -1;
+    $strPosAfter = strlen($string);
     for($i = 0; $i < count($array); $i++) {
-        if(strpos($string, $sub) < strpos($string, $array[$i]->nick)){
-            return $i;
+        if(strpos($string, $sub) < strpos($string, $array[$i]->nick) && strpos($string, $array[$i]->nick) < $strPosAfter){
+            $index = $i;
+            $strPosAfter = strpos($string, $array[$i]->nick);
         }
     }
-    return -1;
+    return $index;
 }
-function lookForFood($character){
-    $event = $character->nick . " goes searching for food.<br><br>" . (($character->gender == "m") ? "He" : "She");
-    $shootChance = f_rand();
-    if(in_array("bow and quiver", $character->inventory) && $character->arrows > 0){
-        $event .= " attempts to shoot a wild animal.<br><br>" . (($character->gender == "m") ? "He" : "She");
-        if(0.12 * $character->dexterity > $shootChance){
-            $foodGain = rand(2, 5);
-            $event .= " is successful. " . (($character->gender == "m") ? "He" : "She") . " gains " . $foodGain . " days' worth of food.<br><br>";
-            $character->daysOfFood += $foodGain;
-            $character->daysWithoutFood = 0;
-        } else {
-            $event .= " misses.<br><br>";
-        }
-    } else {
-        if((0.05 * $character->intelligence) + 0.4 > f_rand()){
-        $character->daysOfFood++;
-        $character->daysWithoutFood = 0;
-        $event .= " finds some wild fruit and gains a day's worth of food.<br><br>";
-        } else {
-            $event .= " doesn't find any.<br><br>";
-        }
-    }
-    return $event;
+function goToSleep($character){
+    $character->status = "Asleep";
+    return $character->nick . " decides to go to sleep.<br><br>";
 }
 function attackPlayer($character, $target){
     $event = '';
@@ -150,14 +137,12 @@ function attackPlayer($character, $target){
 function action($character){
     global $castObject;
     $event = '';
-    $possibleActions = getPossibleActions($character);
-    $chosenAction = weightedActionChoice($character, $possibleActions);
-    switch ($chosenAction){
-        case "look for food":
-            $event .= lookForFood($character);
+    $chosenAction = weightedActionChoice($character);
+        if($chosenAction == "go to sleep"){
+            $event .= goToSleep($character);
             $character->actionTaken = "true";
-            break;
-        case "attack another player":
+        }
+        else if ($chosenAction == "attack another player"){
             do{
                 $target = $castObject[round(rand(0, count($castObject)-1))];
                 //$target = $castObject[0];
@@ -165,26 +150,15 @@ function action($character){
             $event .= attackPlayer($character, $target);
             $character->actionTaken = "true";
             $target->actionTaken = "true";
-            break;
-    }
+        }
+    
     return $event;
 }
-function getPossibleActions($character){
-    $actions = [];
-    if($character->actionTaken == "false"){
-        array_push($actions, "look for food");
-    }
-    if($character->actionTaken == "false" && $character->disposition >= 3){
-        array_push($actions, "attack another player");
-    }
-    //print_r2($actions);
-    return $actions;
-}
-function weightedActionChoice($character, $actions){
-    if(in_array("attack another player", $actions) && 0.3 * ($character->disposition-2) > f_rand()){
+function weightedActionChoice($character){
+    if(0.175 * ($character->disposition) + 0.025){
         return "attack another player";
     } else {
-        return "look for food";
+        return "go to sleep";
     }
 }
           $events = [];

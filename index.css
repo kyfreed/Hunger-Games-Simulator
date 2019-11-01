@@ -2,6 +2,17 @@
   font-family:'AntartidaRD Ess';
   src: url('AntartidaRDEss-Light.ttf');
 }
+@font-face {
+    font-family: 'SkipStd-B-AlphaNum';
+    src: url('SkipStd-B-AlphaNum.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 *{
   font-family:'AntartidaRD Ess';
+  color: #000;
+}
+h1,h4{
+    font-family:'SkipStd-B-AlphaNum' !important;
 }

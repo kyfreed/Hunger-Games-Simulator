@@ -1,4 +1,4 @@
-        <link rel="stylesheet" type="text/css" href="index.css">
+        <link rel="stylesheet" type="text/css" href="index.css?v=1.3">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -17,6 +17,12 @@ $deadToday = json_decode($_COOKIE['deadToday']);
 function f_rand($min=0,$max=1,$mul=1000000){
     if ($min>$max) return false;
     return mt_rand($min*$mul,$max*$mul)/$mul;
+}
+function removeFromArray($value, $array){
+   $newArray = $array;
+   unset($newArray[array_search($value, $newArray)]);
+   $newArray = array_values($newArray);
+   return $newArray;
 }
 function print_r2($val){ //Prints an object to the page in a readable format.
         echo '<pre>';
@@ -51,23 +57,27 @@ function beginningOfDay($character){
     return $event;
 }
 function calculateModifiedStrength($character){
-          if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
-              $knives = 0;
-              foreach ($character->inventory as $value) {
-                  if(strpos("knife", $value) !== false){
-                      $knives++;
-                  }
-              }
-              if(knives > 1){
-                  return 4.8;
-              }
-              return 2.4;
-          }
-          if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
-              return $character->strength + 5;
-          }
-          return $character->strength / 5;
-      }
+    $modStr = 0;
+
+    if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
+        $modStr = $character->strength + 5;
+    } else if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
+        $knives = 0;
+        foreach ($character->inventory as $value) {
+            if(strpos("knife", $value) !== false){
+                $knives++;
+            }
+        }
+        if(knives > 1){
+            $modStr = 4.8;
+        } else {
+            $modStr = 2.4;
+        } 
+    } else {
+        $modStr = $character->strength / 5;
+    }
+    return $modStr;
+}
 function showEvents($events){
           global $castObject;
           echo "<div class='text-center'>";
@@ -85,29 +95,32 @@ function showEvents($events){
           echo "</div>";
 }
 function getCharacterByEvent($event){
-          global $castObject;
-          $characterArray = [];
-          foreach($castObject as $character){
-              if(strpos($event, $character->nick) !== false){
-                  if(count($characterArray) == 0 || firstAfter($character->nick, $characterArray, $event) == -1){
-                      array_push($characterArray, $character);
-                  } else {
-                      array_splice($characterArray, 0, 0, array($character));
-                      
-                  }
-              }
-          }
-          return $characterArray;
-      }
-function firstAfter($sub, $array,$string){
-    global $castObject;
-    for($i = 0; $i < count($array); $i++) {
-        if(strpos($string, $sub) < strpos($string, $array[$i]->nick)){
-            return $i;
+        global $castObject;
+        $characterArray = [];
+        foreach($castObject as $character){
+            if(strpos($event, $character->nick) !== FALSE){
+                if(count($characterArray) == 0 || firstAfter($character->nick, $characterArray, $event) == -1){
+                    array_push($characterArray, $character);
+                } else {
+                    array_splice($characterArray, firstAfter($character->nick, $characterArray, $event), 0, array($character));
+
+                }
+            }
         }
+        return $characterArray;
     }
-    return -1;
-}
+    function firstAfter($sub, $array, $string){
+        global $castObject;
+        $index = -1;
+        $strPosAfter = strlen($string);
+        for($i = 0; $i < count($array); $i++) {
+            if(strpos($string, $sub) < strpos($string, $array[$i]->nick) && strpos($string, $array[$i]->nick) < $strPosAfter){
+                $index = $i;
+                $strPosAfter = strpos($string, $array[$i]->nick);
+            }
+        }
+        return $index;
+    }
 function lookForWater($character){
     $event = $character->nick . " goes searching for water.<br><br>" . (($character->gender == "m") ? "He" : "She");
     if((0.05 * $character->intelligence) + 0.4 > f_rand()){
@@ -189,17 +202,41 @@ function attackPlayer($character, $target){
 //    }
     return $event;
 }
+function plantExplosive($character){
+    $character->explosivesPlanted++;
+    $character->inventory = removeFromArray("an explosive", $character->inventory);
+    return $character->nick . " plants an explosive.<br><br>";
+}
+function triggerExplosive($character, $targets){
+    $character->explosivesPlanted--;
+    foreach ($targets as $target){
+        $target->status = "Dead";
+        array_push($GLOBALS['deadToday'], $target->nick);
+    }
+    return $character->nick . " sets off an explosive, killing " . nameList($targets) . ".<br><br>";
+}
+function nameList($array){
+    if(count($array) == 1){
+        return $array[0]->nick;
+    } else if (count($array) == 2){
+        return $array[0]->nick . " and " . $array[1]->nick;
+    } else {
+        $listString = '';
+        for($i = 0; $i < count($array) - 1; $i++){
+            $listString .= $array[$i]->nick . ", ";
+        }
+        $listString .= "and " . end($array)->nick;
+        return $listString;
+    }
+}
 function action($character){
     global $castObject;
     $event = '';
-    $possibleActions = getPossibleActions($character);
-    $chosenAction = weightedActionChoice($character, $possibleActions);
-    switch ($chosenAction){
-        case "look for food":
+    $chosenAction = weightedActionChoice($character);
+    if($chosenAction == "look for food"){
             $event .= lookForFood($character);
             $character->actionTaken = "true";
-            break;
-        case "attack another player":
+    } else if ($chosenAction == "attack another player"){
             do{
                 $target = $castObject[round(rand(0, count($castObject)-1))];
                 //$target = $castObject[0];
@@ -207,32 +244,47 @@ function action($character){
             $event .= attackPlayer($character, $target);
             $character->actionTaken = "true";
             $target->actionTaken = "true";
-            break;
-        case "look for water":
+    } else if ($chosenAction == "look for water"){
             $event .= lookForWater($character);
             $character->actionTaken = "true";
-            break;
-    }
+    } else if ($chosenAction == "plant explosive"){
+            $event .= plantExplosive($character);
+    } else if (strpos($chosenAction, "explode") === 0){
+            //echo "Initiating explosion...";
+            $targets = [];
+            $remainingTargets = $castObject;
+            $i = 0;
+            while($i < (int) substr($chosenAction, -1)){
+                $target = $remainingTargets[rand(0, count($remainingTargets) - 1)];
+                if(!(in_array($target, $targets) || $target->status == "Dead" || $target == $character)){
+                    array_push($targets, $target);
+                    $remainingTargets = removeFromArray($target, $remainingTargets);
+                    $i++;
+                }
+                
+            }
+            //print_r2($targets);
+            $event .= triggerExplosive($character, $targets);
+        }
+    
     return $event;
 }
-function getPossibleActions($character){
-    $actions = [];
-    if($character->actionTaken == "false"){
-        array_push($actions, "look for food");
-        array_push($actions, "look for water");
-    }
-    if($character->actionTaken == "false" && $character->disposition >= 3){
-        array_push($actions, "attack another player");
-    }
-    //print_r2($actions);
-    return $actions;
-}
-function weightedActionChoice($character, $actions){
+function weightedActionChoice($character){
     if($character->daysOfFood < 2){
         return "look for food";
     } else if ($character->daysOfWater < 2){
         return "look for water";
-    } else if(in_array("attack another player", $actions) && 0.3 * ($character->disposition-2) > f_rand()){
+    } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 4 && 0.5 + (0.3 * $character->disposition) > f_rand()){
+        return "plant explosive";
+    } else if ($character->explosivesPlanted > 0){
+        $numTargets = rand(0, 4);
+        $targets = [];
+        if($numTargets >= 2){
+            //echo "Explosive triggered.";
+            return "explode " . $numTargets;
+        }
+        
+    } else if(0.175 * ($character->disposition) + 0.025 > f_rand()){
         return "attack another player";
     } else {
         if(($character->daysOfWater/$character->daysOfFood) * 0.5 > f_rand()){
@@ -242,61 +294,61 @@ function weightedActionChoice($character, $actions){
         }
     }
 }
-          $events = [];
-           foreach($GLOBALS['castObject'] as $character){
-               if($character->status == "Alive"){
-                   $beginning = beginningOfDay($character);
-                   if($beginning != ''){
-                       array_push($events, $beginning);
-                   }
-               }
-           }
-          foreach($GLOBALS['castObject'] as $character){
-              if($character->actionTaken == "false" && $character->status == "Alive"){
-                  array_push($events, action($character));
-              }
-              foreach($GLOBALS['castObject'] as $fighter){
-                if($fighter->strength < 0 && $fighter->status == "Alive"){
-                  array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-                  $fighter->status = "Dead";
-                  array_push($GLOBALS['deadToday'], $fighter->nick);
-                }
-              }
-              setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
-          }
-          //print_r2($events);
-          showEvents($events);
-          $playersAlive = 0;
-          $nextDestination = 'deadTributes.php';
-          foreach($castObject as $character){
-              $character->actionTaken = "false";
-              if($character->status == "Alive"){
-                  $playersAlive++;
-              }
-          }
-          if($playersAlive == 1){
-              $nextDestination = 'winner.php';
-          }
-          ?>
-              <div class="text-center">
-              <button class="btn btn-primary" onclick="next()">Continue</button>
-          </div>
-              <script>
-              function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
+$events = [];
+ foreach($GLOBALS['castObject'] as $character){
+     if($character->status == "Alive"){
+         $beginning = beginningOfDay($character);
+         if($beginning != ''){
+             array_push($events, $beginning);
+         }
+     }
+ }
+foreach($GLOBALS['castObject'] as $character){
+    if($character->actionTaken == "false" && $character->status == "Alive"){
+        array_push($events, action($character));
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
+    foreach($GLOBALS['castObject'] as $fighter){
+      if($fighter->strength < 0 && $fighter->status == "Alive"){
+        array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
+        $fighter->status = "Dead";
+        array_push($GLOBALS['deadToday'], $fighter->nick);
+      }
     }
-  }
-  return "";
+    setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
 }
+//print_r2($events);
+showEvents($events);
+$playersAlive = 0;
+$nextDestination = 'deadTributes.php';
+foreach($castObject as $character){
+    $character->actionTaken = "false";
+    if($character->status == "Alive"){
+        $playersAlive++;
+    }
+}
+if($playersAlive == 1){
+    $nextDestination = 'winner.php';
+}
+?>
+    <div class="text-center">
+    <button class="btn btn-primary" onclick="next()">Continue</button>
+</div>
+    <script>
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+    }
     function next(){
         $.ajax({
               url: "editFile.php",
@@ -314,4 +366,4 @@ function weightedActionChoice($character, $actions){
           });
           window.location = "<?php echo $nextDestination;?>";
     }
-              </script>
+</script>

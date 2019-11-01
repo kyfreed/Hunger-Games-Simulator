@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="index.css">
+<link rel="stylesheet" type="text/css" href="index.css?v=1.3">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -133,8 +133,10 @@ function avg_strength($array){
               array_push($items,"knife");
               array_push($items,"bow and quiver");
           }
-          for($i = 0; $i < round(0.15 * $castSize); $i++){
+          for($i = 0; $i < round(0.35 * $castSize); $i++){
               array_push($items,"backpack");
+          }
+          for($i = 0; $i < round(0.15 * $castSize); $i++){
               array_push($items,"mace");
               array_push($items,"axe");
           }
@@ -157,30 +159,33 @@ function avg_strength($array){
           }
           echo "</div>";
       }
-      function getCharacterByEvent($event){
-          global $castObject;
-          $characterArray = [];
-          foreach($castObject as $character){
-              if(strpos($event, $character->nick) !== false){
-                  if(count($characterArray) == 0 || firstAfter($character->nick, $characterArray, $event) == -1){
-                      array_push($characterArray, $character);
-                  } else {
-                      array_splice($characterArray, 0, 0, array($character));
-                      
-                  }
-              }
-          }
-          return $characterArray;
-      }
-      function firstAfter($sub, $array,$string){
-          global $castObject;
-          for($i = 0; $i < count($array); $i++) {
-              if(strpos($string, $sub) < strpos($string, $array[$i]->nick)){
-                  return $i;
-              }
-          }
-          return -1;
-      }
+    function getCharacterByEvent($event){
+        global $castObject;
+        $characterArray = [];
+        foreach($castObject as $character){
+            if(strpos($event, $character->nick) !== FALSE){
+                if(count($characterArray) == 0 || firstAfter($character->nick, $characterArray, $event) == -1){
+                    array_push($characterArray, $character);
+                } else {
+                    array_splice($characterArray, firstAfter($character->nick, $characterArray, $event), 0, array($character));
+
+                }
+            }
+        }
+        return $characterArray;
+    }
+    function firstAfter($sub, $array, $string){
+        global $castObject;
+        $index = -1;
+        $strPosAfter = strlen($string);
+        for($i = 0; $i < count($array); $i++) {
+            if(strpos($string, $sub) < strpos($string, $array[$i]->nick) && strpos($string, $array[$i]->nick) < $strPosAfter){
+                $index = $i;
+                $strPosAfter = strpos($string, $array[$i]->nick);
+            }
+        }
+        return $index;
+    }
       function addItemToInventory($item, $character){
           $events = '';
           if($item == "backpack"){
@@ -193,54 +198,65 @@ function avg_strength($array){
               $character->daysOfWater++;
           }
           if($item == "bow and quiver"){
-              if(!(property_exists($character, "arrows"))){
-                  $character->arrows = 0;
-              }
               $character->arrows += 20;
           }
           $character->modifiedStrength = calculateModifiedStrength($character);
           return $events;
       }
       function fillBackpack($character){
-          $possibleItems = array("a knife", "a canteen", "fishing gear", "poison");
+          $possibleItems = array("a knife", "a canteen", "fishing gear", "poison", "an explosive");
           $contents = [];
           for($i = 0; $i < round(rand(0, 5));$i++){
               array_push($contents, $possibleItems[round(rand(0, count($possibleItems)-1))]);
           }
-          array_push($character->inventory, $contents);
+          foreach($contents as $value){
+              array_push($character->inventory, $value);
+              addItemToInventory($value, $character);
+          }
           if(count($contents) == 0){
               return "It contained nothing.<br><br>";
           } else{
               return "It contained " . series($contents) . ".<br><br>";
           }
-          
+          calculateModifiedStrength($character);
       }
-      function calculateModifiedStrength($character){
-          if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
-              $knives = 0;
-              foreach ($character->inventory as $value) {
-                  if(strpos("knife", $value) !== false){
-                      $knives++;
-                  }
-              }
-              if(knives > 1){
-                  return 4.8;
-              }
-              return 2.4;
-          }
-          if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
-              return $character->strength + 5;
-          }
-          return $character->strength / 5;
-      }
+    function calculateModifiedStrength($character){
+        $modStr = 0;
+
+        if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
+            $modStr = $character->strength + 5;
+        } else if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
+            $knives = 0;
+            foreach ($character->inventory as $value) {
+                if(strpos("knife", $value) !== false){
+                    $knives++;
+                }
+            }
+            if(knives > 1){
+                $modStr = 4.8;
+            } else {
+                $modStr = 2.4;
+            } 
+        } else {
+            $modStr = $character->strength / 5;
+        }
+        return $modStr;
+    }
         $items = initializeItems();
-          foreach($castObject as $character){
-              for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){
-                  array_push($character->desiredItems,round(rand(0,count($items)-1)));
-              }
-          }
-          $events = compareItems($items);
-          ?>
+        $events = [];  
+        foreach($castObject as $character){
+            if($character->intelligence <= 3 && 1 - ($character->intelligence * 0.025) < f_rand()){
+                array_push($events, $character->nick . " steps off " . (($fighter->gender == "m") ? "his" : "her") . " podium too early and explodes.<br><br>");
+                $character->status = "Dead";
+                array_push($GLOBALS['deadToday'], $character->nick);
+                
+            }
+            for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){
+                array_push($character->desiredItems,round(rand(0,count($items)-1)));
+            }
+        }
+        $events += compareItems($items);
+        ?>
 <div class="text-center">
     <h1>Bloodbath</h1>
 </div>
