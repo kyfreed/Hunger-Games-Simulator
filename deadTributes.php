@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="index.css?v=1.3">
+<link rel="stylesheet" type="text/css" href="deadTributes.css?v=1.2">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -6,6 +6,7 @@
   crossorigin="anonymous"></script>
 <div class="text-center">
 <title>Hunger Games Simulator</title>
+<body>
 <h1>Dead Tributes <?=$_COOKIE['counter']?></h1>
 <?php
 function print_r2($val){ //Prints an object to the page in a readable format.
@@ -38,3 +39,4 @@ foreach ($deadToday as $nick){
 ?>
     <button type="button" class="btn btn-primary" onclick="window.location = 'night.php';">Continue</button>  
 </div>
+</body>

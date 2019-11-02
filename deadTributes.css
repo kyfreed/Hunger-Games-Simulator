@@ -9,8 +9,9 @@
     font-style: normal;
 }
 
-*{
-  font-family:'AntartidaRD Ess';
+body{
+  font-family:'AntartidaRD Ess' !important;
+  background-image: linear-gradient(#87CEEB, #F2671F);
   color: #000;
 }
 h1,h4{

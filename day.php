@@ -1,13 +1,12 @@
-        <link rel="stylesheet" type="text/css" href="index.css?v=1.3">
+<link rel="stylesheet" type="text/css" href="day.css?v=1.3">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
   <title>Hunger Games Simulator</title>
-  <div class="text-center">
+  <div class="text-center" style="height: 100%">
       <h1>Day <?=$_COOKIE['counter']?></h1>
-  </div>
 <?php
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
           shuffle($castObject);
@@ -80,7 +79,6 @@ function calculateModifiedStrength($character){
 }
 function showEvents($events){
           global $castObject;
-          echo "<div class='text-center'>";
           foreach($events as $event){
               foreach(getCharacterByEvent($event) as $character){
               ?>
@@ -92,7 +90,6 @@ function showEvents($events){
               <?php
               echo $event;
           }
-          echo "</div>";
 }
 function getCharacterByEvent($event){
         global $castObject;
@@ -270,6 +267,7 @@ function action($character){
     return $event;
 }
 function weightedActionChoice($character){
+    $attackChance = [0.025, 0.075, 0.15, 0.65, 0.85];
     if($character->daysOfFood < 2){
         return "look for food";
     } else if ($character->daysOfWater < 2){
@@ -284,7 +282,7 @@ function weightedActionChoice($character){
             return "explode " . $numTargets;
         }
         
-    } else if(0.175 * ($character->disposition) + 0.025 > f_rand()){
+    } else if($attackChance[$character->disposition - 1] > f_rand()){
         return "attack another player";
     } else {
         if(($character->daysOfWater/$character->daysOfFood) * 0.5 > f_rand()){
@@ -333,6 +331,7 @@ if($playersAlive == 1){
     <div class="text-center">
     <button class="btn btn-primary" onclick="next()">Continue</button>
 </div>
+  </div>
     <script>
     function getCookie(cname) {
         var name = cname + "=";

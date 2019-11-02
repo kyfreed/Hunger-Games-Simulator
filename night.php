@@ -1,13 +1,13 @@
-        <link rel="stylesheet" type="text/css" href="index.css?v=1.3">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-        <script
-  src="https://code.jquery.com/jquery-3.4.1.min.js"
-  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-  crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="night.css?v=1.9">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<script
+src="https://code.jquery.com/jquery-3.4.1.min.js"
+integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+crossorigin="anonymous"></script>
   <title>Hunger Games Simulator</title>
-  <div class="text-center">
+  <body style="background-color:#000">
+      <div class="text-center" style="height: 100%">
       <h1>Night <?=$_COOKIE['counter']?></h1>
-  </div>
 <?php
 setcookie("counter", ((int) $_COOKIE['counter']) + 1, 0, "/");
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
@@ -48,7 +48,6 @@ function calculateModifiedStrength($character){
 }
 function showEvents($events){
           global $castObject;
-          echo "<div class='text-center'>";
           foreach($events as $event){
               foreach(getCharacterByEvent($event) as $character){
               ?>
@@ -60,7 +59,6 @@ function showEvents($events){
               <?php
               echo $event;
           }
-          echo "</div>";
 }
 function getCharacterByEvent($event){
         global $castObject;
@@ -106,7 +104,7 @@ function attackPlayer($character, $target){
             $event .= "However, the arrow misses.<br><br>";
         }
     } else {
-        if(0.04 * $character->dexterity + 0.75 < f_rand() || 0.04 * $target->dexterity + 0.25 > f_rand()){
+        if(0.04 * $character->dexterity + 0.75 < f_rand() || (($target->status == "Asleep") ? FALSE : 0.04 * $target->dexterity + 0.25 > f_rand())){
             $event .= "However, it does not connect.<br><br>";
             if(0.3 * ($target->disposition-2) > f_rand()){
                 $event .= $target->nick . " prepares to retaliate!<br><br>";
@@ -155,7 +153,8 @@ function action($character){
     return $event;
 }
 function weightedActionChoice($character){
-    if(0.175 * ($character->disposition) + 0.025){
+    $attackChance = [0.025, 0.075, 0.15, 0.65, 0.85];
+    if($attackChance[$character->disposition - 1] > f_rand()){
         return "attack another player";
     } else {
         return "go to sleep";
@@ -181,6 +180,9 @@ function weightedActionChoice($character){
           $nextDestination = 'day.php';
           foreach($castObject as $character){
               $character->actionTaken = "false";
+              if($character->status == "Asleep"){
+                  $character->status = "Alive";
+              }
               if($character->status == "Alive"){
                   $playersAlive++;
               }
@@ -189,9 +191,9 @@ function weightedActionChoice($character){
               $nextDestination = 'winner.php';
           }
           ?>
-              <div class="text-center">
               <button class="btn btn-primary" onclick="next()">Continue</button>
-          </div>
+      </div>
+      </body>
               <script>
               function getCookie(cname) {
   var name = cname + "=";
