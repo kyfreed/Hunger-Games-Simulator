@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="index.css?v=1.4">
+<link rel="stylesheet" type="text/css" href="bloodbath.css?v=1.1">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -52,21 +52,28 @@ function avg_strength($array){
             $fightArray[0]->modifiedStrength = calculateModifiedStrength($fightArray[0]);
               } else {
                   //print_r2($fightArray);
-                  $strengthsArray = [];
-                  foreach($fightArray as $fighter){
-                      array_push($strengthsArray, $fighter->modifiedStrength);
-                  }
+//                  $strengthsArray = [];
+//                  foreach($fightArray as $fighter){
+//                      array_push($strengthsArray, $fighter->modifiedStrength);
+//                  }
                   //print_r2($strengthsArray);
                   
-                    $strongestCharacters = [];
+                    $characterAttackLottery = [];
                     foreach($fightArray as $fighter){
-                        if($fighter->modifiedStrength == max($strengthsArray)){
-                            array_push($strongestCharacters, $fighter);
+                        for($j = 0; $j < ($fighter->modifiedStrength * 100); $j++){
+                            array_push($characterAttackLottery, $fighter);
                         }
                     }
-                    //print_r2($strongestCharacters);
-                    $arrayIndex = floor(rand(0, count($strongestCharacters) - 1));
-                    $strongestCharacter = $strongestCharacters[$arrayIndex];
+                    $strongestCharacters = [];
+//                    foreach($fightArray as $fighter){
+//                        if($fighter->modifiedStrength == max($strengthsArray)){
+//                            array_push($strongestCharacters, $fighter);
+//                        }
+//                    }
+                    //print_r2($characterAttackLottery);
+                    shuffle($characterAttackLottery);
+                    $strongestCharacter = $characterAttackLottery[rand(0, count($characterAttackLottery) - 1)];
+                    //$strongestCharacter = $strongestCharacters[rand(0, count($strongestCharacters)-1)];
                     //print_r2($strongestCharacter);
                   
                     $otherFighters = removeFromArray($strongestCharacter, $fightArray);
@@ -232,7 +239,7 @@ function avg_strength($array){
                     $knives++;
                 }
             }
-            if(knives > 1){
+            if($knives > 1){
                 $modStr = 4.8;
             } else {
                 $modStr = 2.4;
@@ -257,14 +264,12 @@ function avg_strength($array){
         }
         $events += compareItems($items);
         ?>
-<div class="text-center">
+<div class="text-center" style="height:100%">
     <h1>Bloodbath</h1>
-</div>
           <?php
           //print_r2($castObject);
           showEvents($events);
           ?>
-          <div class="text-center">
               <button class="btn btn-primary" onclick="next()">Continue</button>
           </div>
 <script>

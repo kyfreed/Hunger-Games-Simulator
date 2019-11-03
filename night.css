@@ -12,12 +12,12 @@
 *{
   font-family:'AntartidaRD Ess';
   background-color: #000316;
-  color: #44464F;
+  color: #80818a;
 }
 h1,h4{
     font-family:'SkipStd-B-AlphaNum' !important;
 }
 img {
     border: 1px solid #ddd;
-    box-shadow: 5px 10px 8px #000000;
+    /*box-shadow: 5px -10px 8px #00010a;*/
 }

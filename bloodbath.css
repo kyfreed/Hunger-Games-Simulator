@@ -9,15 +9,15 @@
     font-style: normal;
 }
 
-body{
-  font-family:'AntartidaRD Ess' !important;
-  background-image: linear-gradient(#87CEEB, #F2671F);
-  color: #000;
+*{
+  font-family:'AntartidaRD Ess';
+  background-color: #f03;
+  color: #80001a;
 }
 h1,h4{
     font-family:'SkipStd-B-AlphaNum' !important;
 }
 img {
     border: 1px solid;
-    box-shadow: 5px -10px 8px #888888;
+    box-shadow: 5px -10px 8px #730017;
 }

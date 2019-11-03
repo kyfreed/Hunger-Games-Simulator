@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="day.css?v=1.3">
+<link rel="stylesheet" type="text/css" href="day.css?v=1.5">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -18,6 +18,9 @@ function f_rand($min=0,$max=1,$mul=1000000){
     return mt_rand($min*$mul,$max*$mul)/$mul;
 }
 function removeFromArray($value, $array){
+   if(!in_array($value, $array)){
+       return $array;
+   }
    $newArray = $array;
    unset($newArray[array_search($value, $newArray)]);
    $newArray = array_values($newArray);
@@ -34,11 +37,12 @@ function beginningOfDay($character){
             $character->daysWithoutFood++;
         } else {
             $character->daysOfFood--;
+            $character->inventory = removeFromArray("day's worth of rations", $character->inventory);
         }
         if($character->daysWithoutFood > 1){
             $character->strength--;
             if($character->strength < 0){
-                $events .= $character->nick . " starves to death.<br><br>";
+                $event .= $character->nick . " starves to death.<br><br>";
                 $character->status = "Dead";
                 array_push($GLOBALS['deadToday'], $character->nick);
             }
@@ -46,13 +50,23 @@ function beginningOfDay($character){
         if($character->daysOfWater == 0){
             $character->strength -= 1.5;
             if($character->strength < 0){
-                $events .= $character->nick . " dies of thirst.<br><br>";
+                $event .= $character->nick . " dies of thirst.<br><br>";
                 $character->status = "Dead";
                 array_push($GLOBALS['deadToday'], $character->nick);
             }
         } else {
         $character->daysOfWater++;
         }
+    return $event;
+}
+function sponsor($character){
+    $event = '';
+    $sponsorItems = ["an explosive", "some water", "a first aid kit"];
+    if(0.0625 * $character->charisma > f_rand()){
+        $randItem = $sponsorItems[rand(0, count($sponsorItems) - 1)];
+        $event .= $character->nick . " receives " . $randItem . " from an unknown sponsor.<br><br>" . addItemToInventory($randItem, $character);
+        array_push($character->inventory, $randItem);
+    }
     return $event;
 }
 function calculateModifiedStrength($character){
@@ -67,7 +81,7 @@ function calculateModifiedStrength($character){
                 $knives++;
             }
         }
-        if(knives > 1){
+        if($knives > 1){
             $modStr = 4.8;
         } else {
             $modStr = 2.4;
@@ -212,6 +226,11 @@ function triggerExplosive($character, $targets){
     }
     return $character->nick . " sets off an explosive, killing " . nameList($targets) . ".<br><br>";
 }
+function triggerTrap($character){
+    $event = '';
+    $event .= $character->nick . " steps on a bear trap.<br><br>";
+    $character->strength -= 3;
+}
 function nameList($array){
     if(count($array) == 1){
         return $array[0]->nick;
@@ -225,6 +244,23 @@ function nameList($array){
         $listString .= "and " . end($array)->nick;
         return $listString;
     }
+}
+function addItemToInventory($item, $character){
+          $events = '';
+          if($item == "backpack"){
+              $events .= fillBackpack($character);
+          }
+          if($item == "day's worth of rations"){
+              $character->daysOfFood++;
+          }
+          if($item == "canteen" || $item == "some water"){
+              $character->daysOfWater++;
+          }
+          if($item == "bow and quiver"){
+              $character->arrows += 20;
+          }
+          $character->modifiedStrength = calculateModifiedStrength($character);
+          return $events;
 }
 function action($character){
     global $castObject;
@@ -262,17 +298,21 @@ function action($character){
             }
             //print_r2($targets);
             $event .= triggerExplosive($character, $targets);
+        } else if ($chosenAction == "trigger trap"){
+            $event .= triggerTrap($character);
         }
     
     return $event;
 }
 function weightedActionChoice($character){
-    $attackChance = [0.025, 0.075, 0.15, 0.65, 0.85];
-    if($character->daysOfFood < 2){
+    $attackChance = [0.05, 0.15, 0.35, 0.65, 0.85];
+    if(0.25 > f_rand() && 0.06 * $character->intelligence < f_rand()){
+        return "trigger trap";
+    } else if($character->daysOfFood < 2){
         return "look for food";
     } else if ($character->daysOfWater < 2){
         return "look for water";
-    } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 4 && 0.5 + (0.3 * $character->disposition) > f_rand()){
+    } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition-2) > f_rand()){
         return "plant explosive";
     } else if ($character->explosivesPlanted > 0){
         $numTargets = rand(0, 4);
@@ -298,6 +338,14 @@ $events = [];
          $beginning = beginningOfDay($character);
          if($beginning != ''){
              array_push($events, $beginning);
+         }
+     }
+ }
+ foreach($GLOBALS['castObject'] as $character){
+     if($character->status == "Alive"){
+         $sponsor = sponsor($character);
+         if($sponsor != ''){
+             array_push($events, $sponsor);
          }
      }
  }

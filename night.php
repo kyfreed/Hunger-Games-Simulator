@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="night.css?v=1.9">
+<link rel="stylesheet" type="text/css" href="night.css?v=1.13">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
 src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -36,7 +36,7 @@ function calculateModifiedStrength($character){
                 $knives++;
             }
         }
-        if(knives > 1){
+        if($knives > 1){
             $modStr = 4.8;
         } else {
             $modStr = 2.4;
@@ -153,7 +153,7 @@ function action($character){
     return $event;
 }
 function weightedActionChoice($character){
-    $attackChance = [0.025, 0.075, 0.15, 0.65, 0.85];
+    $attackChance = [0.05, 0.15, 0.35, 0.65, 0.85];
     if($attackChance[$character->disposition - 1] > f_rand()){
         return "attack another player";
     } else {
