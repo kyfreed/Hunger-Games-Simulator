@@ -306,7 +306,7 @@ function action($character){
 }
 function weightedActionChoice($character){
     $attackChance = [0.05, 0.15, 0.35, 0.65, 0.85];
-    if(0.25 > f_rand() && 0.06 * $character->intelligence < f_rand()){
+    if(0.25 > f_rand() && 0.04 * $character->intelligence > f_rand()){
         return "trigger trap";
     } else if($character->daysOfFood < 2){
         return "look for food";

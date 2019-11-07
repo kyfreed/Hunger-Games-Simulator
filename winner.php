@@ -1,11 +1,11 @@
-<link rel="stylesheet" type="text/css" href="index.css?v=1.5">
+<link rel="stylesheet" type="text/css" href="game.css?v=1.5">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
   <title>Hunger Games Simulator</title>
-  <div class="text-center">
+  <div class="text-center" style="height: 100%;">
       <h1>The Winner</h1>
 <?php
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));

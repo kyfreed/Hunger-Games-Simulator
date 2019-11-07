@@ -256,6 +256,7 @@ function avg_strength($array){
                 array_push($events, $character->nick . " steps off " . (($fighter->gender == "m") ? "his" : "her") . " podium too early and explodes.<br><br>");
                 $character->status = "Dead";
                 array_push($GLOBALS['deadToday'], $character->nick);
+                unset($fighter->desiredItems);
                 
             }
             for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){

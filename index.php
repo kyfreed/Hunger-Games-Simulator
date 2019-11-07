@@ -7,7 +7,7 @@ and open the template in the editor.
 <html>
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="linksInHeadings.css?v=1.1">
+        <link rel="stylesheet" type="text/css" href="game.css?v=1.4">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -36,9 +36,10 @@ and open the template in the editor.
         </script>
         <title>Hunger Games Simulator</title>
     </head>
-    <body>
+    <body style="background-color: #228C22;">
         <h1>Hunger Games Simulator</h1>
-        <h4>Inspired by <a href="http://brantsteele.net/hungergames" target="_blank">BrantSteele</a></h4>
+        <h4>Inspired by <a href="http://brantsteele.net/hungergames" target="_blank" style="color: #8C4814;
+    font-family:'SkipStd-B-AlphaNum'; text-decoration: underline;">BrantSteele</a></h4>
         <form action="cast.php" method="get">
             Enter cast size to be generated:&nbsp;
             <input type="number" id="castSize" name="castSize">

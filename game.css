@@ -17,12 +17,14 @@
 h1,h4{
     font-family:'SkipStd-B-AlphaNum' !important;
 }
-
-a{
-    color: #921BBF;
-    font-family:'SkipStd-B-AlphaNum' !important;
+img {
+    border: 1px solid;
+    box-shadow: 5px -10px 8px #114611;
 }
 textarea, input {
     background-color: #fff;
     color: #000;
+}
+a {
+    color: #921BBF;
 }

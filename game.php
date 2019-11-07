@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="index.css?v=1.4">
+<link rel="stylesheet" type="text/css" href="game.css?v=1.4">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -22,7 +22,6 @@
   <body>
     <div class="text-center">
         <h1>Cast</h1>
-    </div>
     <div class="container">
         <div class="row">
     <?php
@@ -37,7 +36,7 @@
         }
         ?>
             <div class="col-lg-4">
-                <div class="text-center">
+             
                     <img src="<?=$value->image?>" width="90" height="90">
                 <br>
                 <strong><?=$value->name?></strong>
@@ -45,14 +44,12 @@
                 <strong><?=$value->status?></strong>
                 <br>
                 <br>
-                </div>
             </div>
         <?php
     }
     ?>
         </div>
     </div>
-  <div class="text-center">
       <button type="button" class="btn btn-primary" onclick="window.location = 'bloodbath.php';">Start</button>
       <br>
       <br>
