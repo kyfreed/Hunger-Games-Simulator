@@ -1,6 +1,8 @@
-@font-face{
-  font-family:'AntartidaRD Ess';
-  src: url('AntartidaRDEss-Light.ttf');
+@font-face {
+    font-family: 'HummingStd-D-AlphaNum';
+    src: url('HummingStd-D-AlphaNum.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
 }
 @font-face {
     font-family: 'SkipStd-B-AlphaNum';
@@ -10,7 +12,7 @@
 }
 
 *{
-  font-family:'AntartidaRD Ess';
+  font-family:'HummingStd-D-AlphaNum';
   background-color: #000316;
   color: #80818a;
 }
