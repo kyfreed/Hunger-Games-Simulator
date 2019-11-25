@@ -8,6 +8,11 @@
     function showCastData(){
             $("#castObject").val(<?= json_encode(file_get_contents($_COOKIE['castObjectFile']))?>);
     }
+    function next(){
+        document.cookie = "deadToday=[]";
+        document.cookie = "counter=1";
+        window.location = 'bloodbath.php';
+    }
 </script>
 <title>Hunger Games Simulator</title>
 <?php
@@ -50,7 +55,7 @@
     ?>
         </div>
     </div>
-      <button type="button" class="btn btn-primary" onclick="window.location = 'bloodbath.php';">Start</button>
+      <button type="button" class="btn btn-primary" onclick="next()">Start</button>
       <br>
       <br>
       <textarea id="castObject" rows="25" cols="25" readonly></textarea>

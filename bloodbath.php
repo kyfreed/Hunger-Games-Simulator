@@ -6,8 +6,8 @@
   crossorigin="anonymous"></script>
   <title>Hunger Games Simulator</title>
 <?php
-setcookie("deadToday", "", time() - 3600);
-setcookie("counter", "1");
+//setcookie("deadToday", "", time() - 3600);
+//setcookie("counter", "1");
 $deadToday = [];
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
 $castSize = count($castObject);
@@ -92,13 +92,13 @@ function avg_strength($array){
                       array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                       $fighter->status = "Dead";
                       array_push($GLOBALS['deadToday'], $fighter->nick);
-                      unset($fighter->desiredItems);
+                      $fighter->desiredItems = [];
                   }
               }
               unset($fightArray);
               unset($otherFighters);
           }
-          setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
+          //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
           return $events;
       }
       function nameList($array){
@@ -256,7 +256,7 @@ function avg_strength($array){
                 array_push($events, $character->nick . " steps off " . (($fighter->gender == "m") ? "his" : "her") . " podium too early and explodes.<br><br>");
                 $character->status = "Dead";
                 array_push($GLOBALS['deadToday'], $character->nick);
-                unset($fighter->desiredItems);
+                $fighter->desiredItems = [];
                 
             }
             for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){
@@ -304,6 +304,7 @@ function avg_strength($array){
                   console.log(errorThrown);
               }
           });
+          document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday'])?>';
           window.location = "day.php";
     }
 </script>

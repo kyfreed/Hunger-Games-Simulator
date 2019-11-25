@@ -230,6 +230,19 @@ function triggerTrap($character){
     $event = '';
     $event .= $character->nick . " steps on a bear trap.<br><br>";
     $character->strength -= 3;
+    return $event;
+}
+
+function heal($character){
+    $event = '';
+    $event .= $character->nick . " tends to " . (($character->gender == "m") ? "his" : "her") . " injuries.<br><br>";
+    if($character->strength + 1 <= $character->maxStrength){
+        $character->strength += 1;
+    } else {
+        $character->strength = $character->maxStrength;
+    }
+    $character->inventory = removeFromArray("a first aid kit", $character->inventory);
+    return $event;
 }
 function nameList($array){
     if(count($array) == 1){
@@ -282,6 +295,7 @@ function action($character){
             $character->actionTaken = "true";
     } else if ($chosenAction == "plant explosive"){
             $event .= plantExplosive($character);
+            $character->actionTaken = "true";
     } else if (strpos($chosenAction, "explode") === 0){
             //echo "Initiating explosion...";
             $targets = [];
@@ -298,8 +312,16 @@ function action($character){
             }
             //print_r2($targets);
             $event .= triggerExplosive($character, $targets);
+            $character->actionTaken = "true";
+            foreach ($targets as $target){
+                $target->actionTaken = "true";
+            }
         } else if ($chosenAction == "trigger trap"){
             $event .= triggerTrap($character);
+            $character->actionTaken = "true";
+        } else if($chosenAction == "heal"){
+            $event .= heal($character);
+            $character->actionTaken = "true";
         }
     
     return $event;
@@ -312,6 +334,8 @@ function weightedActionChoice($character){
         return "look for food";
     } else if ($character->daysOfWater < 2){
         return "look for water";
+    } else if ($character->strength < 1.5 && in_array("a first aid kit", $character->inventory)){ 
+        return "heal";
     } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition-2) > f_rand()){
         return "plant explosive";
     } else if ($character->explosivesPlanted > 0){
@@ -360,7 +384,7 @@ foreach($GLOBALS['castObject'] as $character){
         array_push($GLOBALS['deadToday'], $fighter->nick);
       }
     }
-    setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
+    //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
 }
 //print_r2($events);
 showEvents($events);
@@ -411,6 +435,7 @@ if($playersAlive == 1){
                   console.log(errorThrown);
               }
           });
+          document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday'])?>';
           window.location = "<?php echo $nextDestination;?>";
     }
 </script>

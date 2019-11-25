@@ -4,7 +4,7 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
-  <div class="text-center" style="height:100%">
+  <div class="text-center" style="height:100%; overflow: auto">
 <title>Hunger Games Simulator</title>
 <body>
 <h1>Dead Tributes <?=$_COOKIE['counter']?></h1>
@@ -15,7 +15,6 @@ function print_r2($val){ //Prints an object to the page in a readable format.
         echo  '</pre>';
 }
 $deadToday = json_decode($_COOKIE['deadToday']);
-setcookie("deadToday", "[]", 0, "/");
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
 //print_r2($deadToday);
 if($deadToday != array()){
@@ -37,6 +36,6 @@ foreach ($deadToday as $nick){
     }
 }
 ?>
-    <button type="button" class="btn btn-primary" onclick="window.location = 'night.php';">Continue</button>  
+    <button type="button" class="btn btn-primary" onclick="document.cookie = 'deadToday=[]'; window.location = 'night.php';">Continue</button>  
 </div>
 </body>

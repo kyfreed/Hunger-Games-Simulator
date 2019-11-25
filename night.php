@@ -9,7 +9,7 @@ crossorigin="anonymous"></script>
       <div class="text-center" style="height: 100%">
       <h1>Night <?=$_COOKIE['counter']?></h1>
 <?php
-setcookie("counter", ((int) $_COOKIE['counter']) + 1, 0, "/");
+//setcookie("counter", ((int) $_COOKIE['counter']) + 1, 0, "/");
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
           shuffle($castObject);
           //print_r2($castObject);
@@ -18,6 +18,12 @@ $deadToday = json_decode($_COOKIE['deadToday']);
 function f_rand($min=0,$max=1,$mul=1000000){
     if ($min>$max) return false;
     return mt_rand($min*$mul,$max*$mul)/$mul;
+}
+function removeFromArray($value, $array){
+   $newArray = $array;
+   unset($newArray[array_search($value, $newArray)]);
+   $newArray = array_values($newArray);
+   return $newArray;
 }
 function print_r2($val){ //Prints an object to the page in a readable format.
         echo '<pre>';
@@ -132,29 +138,46 @@ function attackPlayer($character, $target){
 //    }
     return $event;
 }
+
+function heal($character){
+    $event = '';
+    $event .= $character->nick . " tends to " . (($character->gender == "m") ? "his" : "her") . " injuries.<br><br>";
+    if($character->strength + 1 <= $character->maxStrength){
+        $character->strength += 1;
+    } else {
+        $character->strength = $character->maxStrength;
+    }
+    $character->inventory = removeFromArray("a first aid kit", $character->inventory);
+    return $event;
+}
+
 function action($character){
     global $castObject;
     $event = '';
     $chosenAction = weightedActionChoice($character);
-        if($chosenAction == "go to sleep"){
-            $event .= goToSleep($character);
-            $character->actionTaken = "true";
-        }
-        else if ($chosenAction == "attack another player"){
-            do{
-                $target = $castObject[round(rand(0, count($castObject)-1))];
-                //$target = $castObject[0];
-            } while($target == $character || $target->status != "Alive");
-            $event .= attackPlayer($character, $target);
-            $character->actionTaken = "true";
-            $target->actionTaken = "true";
-        }
+    if($chosenAction == "go to sleep"){
+        $event .= goToSleep($character);
+        $character->actionTaken = "true";
+    } else if ($chosenAction == "attack another player"){
+        do{
+            $target = $castObject[round(rand(0, count($castObject)-1))];
+            //$target = $castObject[0];
+        } while($target == $character || $target->status == "Dead");
+        $event .= attackPlayer($character, $target);
+        $character->actionTaken = "true";
+        $target->actionTaken = "true";
+    } else if($chosenAction == "heal"){
+        $event .= heal($character);
+        $character->actionTaken = "true";
+    }
     
     return $event;
 }
 function weightedActionChoice($character){
     $attackChance = [0.05, 0.15, 0.35, 0.65, 0.85];
-    if($attackChance[$character->disposition - 1] > f_rand()){
+    if($character->strength < 1.5 && in_array("a first aid kit", $character->inventory)){
+        return "heal";
+    } else if($attackChance[$character->disposition - 1] > f_rand()){
         return "attack another player";
     } else {
         return "go to sleep";
@@ -162,11 +185,11 @@ function weightedActionChoice($character){
 }
           $events = [];
           foreach($GLOBALS['castObject'] as $character){
-              if($character->actionTaken == "false" && $character->status == "Alive"){
+              if($character->actionTaken == "false" && $character->status != "Dead"){
                   array_push($events, action($character));
               }
               foreach($GLOBALS['castObject'] as $fighter){
-                if($fighter->strength < 0 && $fighter->status == "Alive"){
+                if($fighter->strength < 0 && $fighter->status != "Dead"){
                   array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                   $fighter->status = "Dead";
                   array_push($GLOBALS['deadToday'], $fighter->nick);
@@ -225,6 +248,8 @@ function weightedActionChoice($character){
                   console.log(errorThrown);
               }
           });
+          document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday'])?>';
+          document.cookie = "counter=" + String(parseInt(getCookie("counter")) + 1);
           window.location = "<?php echo $nextDestination;?>";
     }
               </script>
