@@ -17,6 +17,21 @@ function f_rand($min=0,$max=1,$mul=1000000){
     if ($min>$max) return false;
     return mt_rand($min*$mul,$max*$mul)/$mul;
 }
+function startsWith($haystack, $needle)
+{
+     $length = strlen($needle);
+     return (substr($haystack, 0, $length) === $needle);
+}
+
+function endsWith($haystack, $needle)
+{
+    $length = strlen($needle);
+    if ($length == 0) {
+        return true;
+    }
+
+    return (substr($haystack, -$length) === $needle);
+}
 function removeFromArray($value, $array){
    if(!in_array($value, $array)){
        return $array;
@@ -74,6 +89,7 @@ function calculateModifiedStrength($character){
 
     if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
         $modStr = $character->strength + 5;
+        $character->equippedItem = "an axe";
     } else if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
         $knives = 0;
         foreach ($character->inventory as $value) {
@@ -83,11 +99,14 @@ function calculateModifiedStrength($character){
         }
         if($knives > 1){
             $modStr = 4.8;
+            $character->equippedItem = "two knives";
         } else {
             $modStr = 2.4;
+            $character->equippedItem = "a knife";
         } 
     } else {
         $modStr = $character->strength / 5;
+        $character->equippedItem = "";
     }
     return $modStr;
 }
@@ -174,9 +193,8 @@ function lookForFood($character){
 }
 function attackPlayer($character, $target){
     $event = '';
-    $event .= $character->nick . " attempts to attack " . $target->nick . ".<br><br>";
     if(in_array("bow and quiver", $character->inventory) && $character->arrows > 0 && $character->strength <= 2.4){
-        $event .= $character->nick . " lets loose an arrow!<br><br>";
+        $event .= $character->nick . " attempts to shoot " . $target->nick . " with an arrow.<br><br>";
         $character->arrows--;
         if($character->dexterity * 0.12 > f_rand()){
             $event .= "A direct hit!<br><br>";
@@ -185,6 +203,7 @@ function attackPlayer($character, $target){
             $event .= "However, the arrow misses.<br><br>";
         }
     } else {
+        $event .= $character->nick . " attempts to attack " . $target->nick . (($character->equippedItem != "") ? " with " . $character->equippedItem : "") . ".<br><br>";
         if(0.04 * $character->dexterity + 0.7 < f_rand() || 0.04 * $target->dexterity + 0.3 > f_rand()){
             $event .= "However, it does not connect.<br><br>";
             if(0.3 * ($target->disposition-2) > f_rand()){

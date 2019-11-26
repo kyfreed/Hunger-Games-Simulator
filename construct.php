@@ -22,8 +22,8 @@
             $tempObject->charisma = (int) $_POST["castCha" . $i];
             $tempObject->defense = 0;
             $tempObject->image = $_POST["castImage" . $i];
-            $tempObject->name = HTML_SPECIALCHARS($_POST["castName" . $i]);
-            $tempObject->nick = HTML_SPECIALCHARS($_POST["castNick" . $i]);
+            $tempObject->name = htmlspecialchars($_POST["castName" . $i]);
+            $tempObject->nick = htmlspecialchars($_POST["castNick" . $i]);
             $tempObject->status = "Alive";
             $tempObject->actionTaken = "false";
             $tempObject->daysOfFood = 1;
@@ -35,6 +35,7 @@
             $tempObject->explosivesPlanted = 0;
             $tempObject->memberOfAlliance = -1;
             $tempObject->equippedItem = "";
+            $tempObject->kills = 0;
             array_push($castObject,clone $tempObject);
           }
           $filename = "castObject" . randomDigits() . ".txt";

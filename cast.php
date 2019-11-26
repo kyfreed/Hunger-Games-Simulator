@@ -7,7 +7,8 @@
   <script>
       var cookie;
       function next(){
-          $.ajax({
+        console.log($("#castForm").serialize());  
+        $.ajax({
               url: "construct.php",
               async: false,
               method: "POST",

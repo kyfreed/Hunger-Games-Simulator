@@ -85,7 +85,7 @@ function avg_strength($array){
                     unset($strongestCharacter->desiredItems[array_search($i, $strongestCharacter->desiredItems)]);
                     $strongestCharacter->desiredItems = array_values($strongestCharacter->desiredItems);
                     array_push($strongestCharacter->inventory,$items[$i]);
-                    array_push($events, $strongestCharacter->nick . " attacks ". nameList($otherFighters) ." and steals the " . $items[$i] . " that they were " . (count($fightArray) == 2 ? "both" : "all") ." fighting over.<br><br>" . addItemToInventory($items[$i], $strongestCharacter));
+                    array_push($events, $strongestCharacter->nick . " attacks ". nameList($otherFighters) . (($strongestCharacter->equippedItem != "") ? " with " . $strongestCharacter->equippedItem : "") . " and steals the " . $items[$i] . " that they were " . (count($fightArray) == 2 ? "both" : "all") ." fighting over.<br><br>" . addItemToInventory($items[$i], $strongestCharacter));
               }
               foreach($fightArray as $fighter){
                   if($fighter->strength < 0){
@@ -228,27 +228,31 @@ function avg_strength($array){
           calculateModifiedStrength($character);
       }
     function calculateModifiedStrength($character){
-        $modStr = 0;
+    $modStr = 0;
 
-        if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
-            $modStr = $character->strength + 5;
-        } else if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
-            $knives = 0;
-            foreach ($character->inventory as $value) {
-                if(strpos("knife", $value) !== false){
-                    $knives++;
-                }
+    if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
+        $modStr = $character->strength + 5;
+        $character->equippedItem = "an axe";
+    } else if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
+        $knives = 0;
+        foreach ($character->inventory as $value) {
+            if(strpos("knife", $value) !== false){
+                $knives++;
             }
-            if($knives > 1){
-                $modStr = 4.8;
-            } else {
-                $modStr = 2.4;
-            } 
-        } else {
-            $modStr = $character->strength / 5;
         }
-        return $modStr;
+        if($knives > 1){
+            $modStr = 4.8;
+            $character->equippedItem = "two knives";
+        } else {
+            $modStr = 2.4;
+            $character->equippedItem = "a knife";
+        } 
+    } else {
+        $modStr = $character->strength / 5;
+        $character->equippedItem = "";
     }
+    return $modStr;
+}
         $items = initializeItems();
         $events = [];  
         foreach($castObject as $character){

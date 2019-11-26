@@ -35,6 +35,7 @@ function calculateModifiedStrength($character){
 
     if(in_array("axe", $character->inventory) || in_array("mace", $character->inventory)){
         $modStr = $character->strength + 5;
+        $character->equippedItem = "an axe";
     } else if($character->strength < 2.4 && in_array("a knife", $character->inventory) || in_array("knife", $character->inventory)){
         $knives = 0;
         foreach ($character->inventory as $value) {
@@ -44,11 +45,14 @@ function calculateModifiedStrength($character){
         }
         if($knives > 1){
             $modStr = 4.8;
+            $character->equippedItem = "two knives";
         } else {
             $modStr = 2.4;
+            $character->equippedItem = "a knife";
         } 
     } else {
         $modStr = $character->strength / 5;
+        $character->equippedItem = "";
     }
     return $modStr;
 }
@@ -99,22 +103,24 @@ function goToSleep($character){
 }
 function attackPlayer($character, $target){
     $event = '';
-    $event .= $character->nick . " attempts to attack " . $target->nick . ".<br><br>";
     if(in_array("bow and quiver", $character->inventory) && $character->arrows > 0 && $character->strength <= 2.4){
-        $event .= $character->nick . " lets loose an arrow!<br><br>";
+        $event .= $character->nick . " attempts to shoot " . $target->nick . " with an arrow" . (($target->status == "Asleep") ? " while " . (($target->gender == "m") ? "he" : "she") . " is sleeping" : "") . ".<br><br>";
         $character->arrows--;
         if($character->dexterity * 0.12 > f_rand()){
             $event .= "A direct hit!<br><br>";
             $target->strength -= round(f_rand(0.75,1.75),2);
+            $target->status = "Alive";
         } else {
             $event .= "However, the arrow misses.<br><br>";
         }
     } else {
-        if(0.04 * $character->dexterity + 0.75 < f_rand() || (($target->status == "Asleep") ? FALSE : 0.04 * $target->dexterity + 0.25 > f_rand())){
+        $event .= $character->nick . " attempts to attack " . $target->nick . (($character->equippedItem != "") ? " with " . $character->equippedItem : "") . (($target->status == "Asleep") ? " while " . (($target->gender == "m") ? "he" : "she") . " is sleeping" : "") .".<br><br>";
+        if(($target->status == "Asleep") ? FALSE : 0.04 * $character->dexterity + 0.7 < f_rand() || 0.04 * $target->dexterity + 0.3 > f_rand()){
             $event .= "However, it does not connect.<br><br>";
             if(0.3 * ($target->disposition-2) > f_rand()){
+                $target->status = "Alive";
                 $event .= $target->nick . " prepares to retaliate!<br><br>";
-                if(0.04 * $target->dexterity + 0.7 < f_rand() || 0.04 * $character->dexterity + 0.3 > f_rand()){
+                if(0.04 * $target->dexterity + 0.75 < f_rand() || 0.04 * $character->dexterity + 0.25 > f_rand()){
                     $event .= "Unfortunately, this fails as well.<br><br>";
                 } else {
                     $event .= (($target->gender == "m") ? "He" : "She") . " is successful in doing so.<br><br>";
@@ -124,6 +130,7 @@ function attackPlayer($character, $target){
         } else {
             $event .= (($character->gender == "m") ? "He" : "She") . " makes a successful attack.<br><br>";
             $target->strength -= $character->modifiedStrength - $target->defense;
+            $target->status = "Alive";
         }
     }
 //    if($character->strength < 0){
@@ -195,7 +202,7 @@ function weightedActionChoice($character){
                   array_push($GLOBALS['deadToday'], $fighter->nick);
                 }
               }
-              setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
+              //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
           }
           //print_r2($events);
           showEvents($events);
