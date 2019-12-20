@@ -411,7 +411,8 @@ $playersAlive = 0;
 $nextDestination = 'deadTributes.php';
 foreach($castObject as $character){
     $character->actionTaken = "false";
-    if($character->status == "Alive"){
+    if($character->status != "Dead"){
+        $character->status = "Alive";
         $playersAlive++;
     }
 }

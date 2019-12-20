@@ -210,10 +210,8 @@ function weightedActionChoice($character){
           $nextDestination = 'day.php';
           foreach($castObject as $character){
               $character->actionTaken = "false";
-              if($character->status == "Asleep"){
+              if($character->status != "Dead"){
                   $character->status = "Alive";
-              }
-              if($character->status == "Alive"){
                   $playersAlive++;
               }
           }
