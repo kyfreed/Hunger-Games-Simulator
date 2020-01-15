@@ -60,7 +60,7 @@ function avg_strength($array){
                   
                     $characterAttackLottery = [];
                     foreach($fightArray as $fighter){
-                        for($j = 0; $j < ($fighter->modifiedStrength * 100); $j++){
+                        for($j = 0; $j < ($fighter->modifiedStrength * 100 + $fighter->intelligence * 100); $j++){
                             array_push($characterAttackLottery, $fighter);
                         }
                     }
@@ -93,6 +93,9 @@ function avg_strength($array){
                       $fighter->status = "Dead";
                       array_push($GLOBALS['deadToday'], $fighter->nick);
                       $fighter->desiredItems = [];
+                      foreach(removeFromArray($fighter, $fightArray) as $victor){
+                          $victor->kills++;
+                      }
                   }
               }
               unset($fightArray);

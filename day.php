@@ -158,8 +158,12 @@ function lookForWater($character){
         $event .= " finds a water source and drinks from it.<br><br>";
         if(in_array("canteen", $character->inventory)){
             $canteens = array_count_values($character->inventory)["canteen"];
-            $event .= (($character->gender == "m") ? "He" : "She") . " also fills " . (($character->gender == "m") ? "his" : "her") . " canteen" . (($canteens == 1) ? "" : "s") . ".<br><br>";
+            $event .= (($character->gender == "m") ? "He" : "She") . " fills " . (($character->gender == "m") ? "his" : "her") . " canteen" . (($canteens == 1) ? "" : "s") . ".<br><br>";
             $character->daysOfWater += $canteens;
+        }
+        if(in_array("fishing gear", $character->inventory)){
+            $catchResults = floor((($character->dexterity * $character->intelligence) / 2) * f_rand(0.15, 0.45));
+            $event .= (($character->gender == "m") ? "He" : "She") . " also fishes and gains " . (($catchResults > 0) ? $catchResults . (($catchResults == 1) ? " day's" : " days'") . " worth of food.<br><br>" : "nothing.<br><br>");
         }
     } else {
         $event .= " doesn't find any.<br><br>";
@@ -230,6 +234,9 @@ function attackPlayer($character, $target){
 //        $target->status = "Dead";
 //        array_push($GLOBALS['deadToday'], $target->nick);
 //    }
+    if($target->strength < 0){
+        $character->kills++;
+    }
     return $event;
 }
 function plantExplosive($character){
@@ -243,6 +250,7 @@ function triggerExplosive($character, $targets){
         $target->status = "Dead";
         array_push($GLOBALS['deadToday'], $target->nick);
     }
+    $character->kills += count($targets);
     return $character->nick . " sets off an explosive, killing " . nameList($targets) . ".<br><br>";
 }
 function triggerTrap($character){

@@ -5,20 +5,15 @@ function startsWith ($string, $startString)
     return (substr($string, 0, $len) === $startString); 
 }
 
-function endsWith($string, $endString) 
-{ 
-    $len = strlen($endString); 
-    if ($len == 0) { 
-        return true; 
-    } 
-    return (substr($string, -$len) === $endString); 
-}
-
-$files = scandir("..");
+$files = scandir(".");
+$deletedFiles = [];
 
 foreach ($files as $file){
     if(startsWith($file, "castObject") && time() - filemtime($file) >= 604800){
+        $deletedFiles->append($file);
         unlink($file);
     }
 }
+
+echo $deletedFiles;
 
