@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'sourcecodeprosemibold';
+    src: url('sourcecodeprosemibold.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SkipStd-B-AlphaNum';
+    src: url('SkipStd-B-AlphaNum.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+body{
+  font-family:'sourcecodeprosemibold';
+  background-color: #000;
+  color: #0f0;  
+}
+img {
+    border: 1px solid;
+}

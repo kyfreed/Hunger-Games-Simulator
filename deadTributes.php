@@ -31,9 +31,10 @@ foreach ($deadToday as $nick){
             imagepng($image);
             $imagedata = ob_get_contents();
             ob_end_clean();
-            echo '<img src="data:image/png;base64,'.base64_encode($imagedata).'"/ width="90" height="90"><br><br>';
+            echo '<img src="data:image/png;base64,'.base64_encode($imagedata).'"/ width="90" height="90"><br>';
         }
     }
+    echo $nick . "<br><br>";
 }
 ?>
     <button type="button" class="btn btn-primary" onclick="document.cookie = 'deadToday=[]'; window.location = 'night.php';">Continue</button>  

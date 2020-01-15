@@ -18,4 +18,7 @@ echo "<img src='$winner->image' width='90' height='90'><br>";
 echo $winner->nick . " is the winner!<br><br>";
 ?>
       <button type="button" class="btn btn-primary" onclick="window.location = 'index.php'">Return to Home Screen</button>
+      <br>
+      <br>
+      <button type="button" class="btn btn-primary" onclick="window.location = 'stats.php'">Final Stats</button>
   </div>

@@ -16,6 +16,9 @@
   background-color: #228C22;
   color: #000000;
 }
+body{
+  background-color: #228C22;  
+}
 h1,h4{
     font-family:'SkipStd-B-AlphaNum' !important;
 }
