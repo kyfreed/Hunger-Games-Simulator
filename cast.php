@@ -69,7 +69,7 @@
                                 <input type="number" name="castStrength<?=$i+$j?>">
                                 <br>
                                 HP (1-10):&nbsp;
-                                <input type ="number" name="castHP<?=$i+$j?>">
+                                <input type="number" name="castHP<?=$i+$j?>">
                                 <br>
                                 Dexterity (1-10):&nbsp;
                                 <input type="number" name="castDex<?=$i+$j?>">

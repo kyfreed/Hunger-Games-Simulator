@@ -38,6 +38,7 @@
             $tempObject->equippedItem = "";
             $tempObject->kills = 0;
             $tempObject->daysAlive = 0;
+            $tempObject->orderMarker = $i;
             array_push($castObject,clone $tempObject);
           }
           $filename = "castObject" . randomDigits() . ".txt";
