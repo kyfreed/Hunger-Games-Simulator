@@ -9,13 +9,15 @@
               } while(file_exists("castObject" . $digits . ".txt") === TRUE);
               return $digits;
           }
-          $castSize=count($_POST)/10;
+          $castSize=count($_POST)/9;
           $castObject = [];
-          for($i = 0; $i < $castSize; $i++){
+          for($i = 1; $i <= $castSize; $i++){
+            $tempObject->name = htmlspecialchars($_POST["castName" . $i]);
+            $tempObject->nick = (($_POST["castNick" . $i] != "") ? htmlspecialchars($_POST["castNick" . $i]) : $tempObject->name);
             $tempObject->gender = $_POST["castGender" . $i];
             $tempObject->disposition = (($_POST["castDisposition" . $i] != "") ? (int) $_POST["castDisposition" . $i] : 5);
             $tempObject->strength = (($_POST["castStrength" . $i] != "") ? (int) $_POST["castStrength" . $i] : 5);
-            $tempObject->health = 5;
+            $tempObject->health = (($_POST["castHP" . $i] != "") ? (int) $_POST["castHP" . $i] : 5);
             $tempObject->maxStrength = $tempObject->strength;
             $tempObject->modifiedStrength = $tempObject->strength / 5;
             $tempObject->dexterity = (($_POST["castDex" . $i] != "") ? (int) $_POST["castDex" . $i] : 5);
@@ -23,8 +25,6 @@
             $tempObject->charisma = (($_POST["castCha" . $i] != "") ? (int) $_POST["castCha" . $i] : 5);
             $tempObject->defense = 0;
             $tempObject->image = (($_POST["castImage" . $i] != "") ? $_POST["castImage" . $i] : "generateImage.php?imageInitial=" . substr(htmlspecialchars($_POST["castName" . $i]),0,1));
-            $tempObject->name = htmlspecialchars($_POST["castName" . $i]);
-            $tempObject->nick = (($_POST["castNick" . $i] != "") ? htmlspecialchars($_POST["castNick" . $i]) : $tempObject->name);
             $tempObject->status = "Alive";
             $tempObject->actionTaken = "false";
             $tempObject->daysOfFood = 1;
