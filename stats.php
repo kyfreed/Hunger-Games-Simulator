@@ -13,21 +13,16 @@ crossorigin="anonymous"></script>
       return strcmp($a->name, $b->name);
   }
   usort($castObject, "cmp");
-  
-  function maxNameLength($castObject){
-      $maxLength = 0;
-      foreach($castObject as $castMember){
-          if(strlen($castMember->name) > $maxLength){
-              $maxLength = strlen($castMember->name);
-          }
-      }
-      return $maxLength;
-  }
-  $nameLength = maxNameLength($castObject);
+  echo "<table>";
   foreach ($castObject as $castMember){
-      echo '<img src="'. $castMember->image . '" height="90" width="90">&nbsp;';
-      echo $castMember->name . str_repeat("&nbsp;", ($nameLength - strlen($castMember->name)) + 2) . $castMember->kills . " kill" . ($castMember->kills != 1 ? "s" : "") . "<br><br>";
+      echo "<tr>";
+      echo '<td><img src="'. $castMember->image . '" height="90" width="90"></td>';
+      echo '<td>' . $castMember->name . '&nbsp;&nbsp;</td>';
+      echo '<td>' . $castMember->kills . " kill" . ($castMember->kills != 1 ? "s" : "") . "&nbsp;&nbsp;</td>";
+      echo '<td>' . $castMember->daysAlive . " day" . ($castMember->daysAlive != 1 ? "s" : "") . " survived&nbsp;&nbsp;</td>";
+      echo '</tr>';
   }
+  echo "</table>";
   ?>
       <br>
       <br>
