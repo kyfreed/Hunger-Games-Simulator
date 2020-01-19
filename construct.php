@@ -21,6 +21,7 @@
             $tempObject->gender = $_POST["castGender" . $i];
             $tempObject->disposition = (($_POST["castDisposition" . $i] != "") ? (int) $_POST["castDisposition" . $i] : 5);
             $tempObject->strength = (($_POST["castStrength" . $i] != "") ? (int) $_POST["castStrength" . $i] : 5);
+
             $tempObject->health = (($_POST["castHealth" . $i] != "") ? (int) $_POST["castHealth" . $i] : 5);
             $tempObject->maxStrength = $tempObject->strength;
             $tempObject->modifiedStrength = $tempObject->strength / 5;

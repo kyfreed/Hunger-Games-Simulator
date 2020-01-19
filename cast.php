@@ -43,10 +43,10 @@
                         <div class="row">
                             <?php
                             for($j = 0; $j < 3; $j++){
-                                if($i + $j < $castSize){
+                                if($i + $j <= $castSize){
                             ?>
                             <div class="col-lg-4">
-                                <strong><u>Cast member <?=$i+$j+1?></u></strong>
+                                <strong><u>Cast member <?=$i+$j?></u></strong>
                                 <br>
                                 Name:&nbsp;
                                 <input type="text" id=castName<?=$i+$j?>" name="castName<?=$i+$j?>">
