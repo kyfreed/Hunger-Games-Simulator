@@ -15,6 +15,7 @@ $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
           //print_r2($castObject);
           $castSize = count($castObject);
 $deadToday = json_decode($_COOKIE['deadToday']);
+$place = (int)$_COOKIE['place'];
 function f_rand($min=0,$max=1,$mul=1000000){
     if ($min>$max) return false;
     return mt_rand($min*$mul,$max*$mul)/$mul;
@@ -114,6 +115,10 @@ function attackPlayer($character, $target){
                 } else {
                     $event .= (($target->gender == "m") ? "He" : "She") . " is successful in doing so.<br><br>";
                     $character->strength -= $target->modifiedStrength - $character->defense;
+                    $character->health -= $target->modifiedStrength - $character->defense;
+                    if($character->health < 0){
+                        $target->kills++;
+                    }
                 }
             }
         } else {
@@ -121,19 +126,10 @@ function attackPlayer($character, $target){
                 $event .= (($character->gender == "m") ? "He" : "She") . " makes a successful attack.<br><br>";
             }
             $target->strength -= $character->modifiedStrength - $target->defense;
+            $target->health -= $character->modifiedStrength - $target->defense;
             $target->status = "Alive";
         }
-//    if($character->strength < 0){
-//        array_push($events, $character->nick . " succumbs to " . (($character->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-//        $character->status = "Dead";
-//        array_push($GLOBALS['deadToday'], $character->nick);
-//    }
-//    if($target->strength < 0){
-//        array_push($events, $target->nick . " succumbs to " . (($target->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-//        $target->status = "Dead";
-//        array_push($GLOBALS['deadToday'], $target->nick);
-//    }
-    if($target->strength < 0){
+    if($target->health < 0){
         $character->kills++;
     }
     return $event;
@@ -188,13 +184,17 @@ function weightedActionChoice($character){
               if($character->actionTaken == "false" && $character->status != "Dead"){
                   array_push($events, action($character));
               }
+              $deadNow = 0;
               foreach($GLOBALS['castObject'] as $fighter){
-                if($fighter->strength < 0 && $fighter->status != "Dead"){
+                if($fighter->health < 0 && $fighter->status != "Dead"){
                   array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                   $fighter->status = "Dead";
+                  $fighter->place = $GLOBALS['place'];
+                  $deadNow++;
                   array_push($GLOBALS['deadToday'], $fighter->nick);
                 }
               }
+              $GLOBALS['place'] -= $deadNow;
               //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
           }
           //print_r2($events);
@@ -210,7 +210,12 @@ function weightedActionChoice($character){
               }
           }
           if($playersAlive == 1){
-              $nextDestination = 'winner.php';
+            foreach($castObject as $character){
+                if($character->status == "Alive"){
+                    $character->place = 1;
+                }
+            }
+            $nextDestination = 'winner.php';
           }
           ?>
               <button class="btn btn-primary" onclick="next()">Continue</button>
@@ -248,6 +253,7 @@ function weightedActionChoice($character){
               }
           });
           document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday'])?>';
+          document.cookie = "place=" + <?php echo $GLOBALS['place']?>;
           document.cookie = "counter=" + String(parseInt(getCookie("counter")) + 1);
           window.location = "<?php echo $nextDestination;?>";
     }

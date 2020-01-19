@@ -4,6 +4,10 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+  <?php
+  $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
+  $castSize = count($castObject);
+  ?>
 <script>
     function showCastData(){
             $("#castObject").val(<?= json_encode(file_get_contents($_COOKIE['castObjectFile']))?>);
@@ -11,6 +15,7 @@
     function next(){
         document.cookie = "deadToday=[]";
         document.cookie = "counter=1";
+        document.cookie = "place=<?=$castSize?>";
         window.location = 'bloodbath.php';
     }
 </script>
@@ -21,8 +26,6 @@
         print_r($val);
         echo  '</pre>';
 }
-          $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
-          $castSize = count($castObject);
 ?>
   <body>
     <div class="text-center">

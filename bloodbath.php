@@ -6,11 +6,11 @@
   crossorigin="anonymous"></script>
   <title>Hunger Games Simulator</title>
 <?php
-//setcookie("deadToday", "", time() - 3600);
-//setcookie("counter", "1");
 $deadToday = [];
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
 $castSize = count($castObject);
+$place = (int)$_COOKIE['place'];
+//echo $place;
 function f_rand($min=0,$max=1,$mul=1000000){
     if ($min>$max) return false;
     return mt_rand($min*$mul,$max*$mul)/$mul;
@@ -51,35 +51,19 @@ function avg_strength($array){
                   array_push($events, $fightArray[0]->nick . " grabs " . ((in_array(substr($items[$i], 0,1), ["a", "e", "i", "o"])) ? "an " : "a ") . $items[$i] . ".<br><br>" . addItemToInventory($items[$i], $fightArray[0]));
             $fightArray[0]->modifiedStrength = calculateModifiedStrength($fightArray[0]);
               } else {
-                  //print_r2($fightArray);
-//                  $strengthsArray = [];
-//                  foreach($fightArray as $fighter){
-//                      array_push($strengthsArray, $fighter->modifiedStrength);
-//                  }
-                  //print_r2($strengthsArray);
-                  
                     $characterAttackLottery = [];
                     foreach($fightArray as $fighter){
                         for($j = 0; $j < ($fighter->modifiedStrength * 100 + $fighter->intelligence * 100); $j++){
                             array_push($characterAttackLottery, $fighter);
                         }
                     }
-                    $strongestCharacters = [];
-//                    foreach($fightArray as $fighter){
-//                        if($fighter->modifiedStrength == max($strengthsArray)){
-//                            array_push($strongestCharacters, $fighter);
-//                        }
-//                    }
-                    //print_r2($characterAttackLottery);
                     shuffle($characterAttackLottery);
                     $strongestCharacter = $characterAttackLottery[rand(0, count($characterAttackLottery) - 1)];
-                    //$strongestCharacter = $strongestCharacters[rand(0, count($strongestCharacters)-1)];
-                    //print_r2($strongestCharacter);
-                  
                     $otherFighters = removeFromArray($strongestCharacter, $fightArray);
                     //print_r2($otherFighters);
                     foreach($fightArray as $fighter){
                             $fighter->strength -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 1.35);
+                            $fighter->health -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 1.35);
                             $fighter->modifiedStrength = calculateModifiedStrength($fighter);
                     }
                     unset($strongestCharacter->desiredItems[array_search($i, $strongestCharacter->desiredItems)]);
@@ -87,10 +71,13 @@ function avg_strength($array){
                     array_push($strongestCharacter->inventory,$items[$i]);
                     array_push($events, $strongestCharacter->nick . " attacks ". nameList($otherFighters) . (($strongestCharacter->equippedItem != "") ? " with " . $strongestCharacter->equippedItem : "") . " and steals the " . $items[$i] . " that they were " . (count($fightArray) == 2 ? "both" : "all") ." fighting over.<br><br>" . addItemToInventory($items[$i], $strongestCharacter));
               }
+              $deadNow = 0;
               foreach($fightArray as $fighter){
-                  if($fighter->strength < 0){
+                  if($fighter->health < 0){
                       array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                       $fighter->status = "Dead";
+                      $deadNow++;
+                      $fighter->place = $GLOBALS['place'];
                       array_push($GLOBALS['deadToday'], $fighter->nick);
                       $fighter->desiredItems = [];
                       foreach(removeFromArray($fighter, $fightArray) as $victor){
@@ -98,6 +85,7 @@ function avg_strength($array){
                       }
                   }
               }
+              $GLOBALS['place'] -= $deadNow;
               unset($fightArray);
               unset($otherFighters);
           }
@@ -214,7 +202,7 @@ function avg_strength($array){
           return $events;
       }
       function fillBackpack($character){
-          $possibleItems = array("a knife", "a canteen", "fishing gear", "poison", "an explosive");
+          $possibleItems = array("a knife", "a canteen", "fishing gear", "an explosive");
           $contents = [];
           for($i = 0; $i < round(rand(0, 5));$i++){
               array_push($contents, $possibleItems[round(rand(0, count($possibleItems)-1))]);
@@ -262,8 +250,9 @@ function avg_strength($array){
             if($character->intelligence <= 3 && 1 - ($character->intelligence * 0.025) < f_rand()){
                 array_push($events, $character->nick . " steps off " . (($fighter->gender == "m") ? "his" : "her") . " podium too early and explodes.<br><br>");
                 $character->status = "Dead";
+                $character->place = $GLOBALS['place']--;
                 array_push($GLOBALS['deadToday'], $character->nick);
-                $fighter->desiredItems = [];
+                $character->desiredItems = [];
                 
             }
             for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){
@@ -312,6 +301,7 @@ function avg_strength($array){
               }
           });
           document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday'])?>';
+          document.cookie = "place=" + <?php echo $GLOBALS['place']?>;
           window.location = "day.php";
     }
 </script>
