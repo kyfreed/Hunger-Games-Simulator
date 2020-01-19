@@ -10,9 +10,9 @@
 <?php
 $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
           shuffle($castObject);
-          //print_r2($castObject);
           $castSize = count($castObject);
 $deadToday = json_decode($_COOKIE['deadToday']);
+$place = (int)$_COOKIE['place'];
 function f_rand($min=0,$max=1,$mul=1000000){
     if ($min>$max) return false;
     return mt_rand($min*$mul,$max*$mul)/$mul;
@@ -56,17 +56,21 @@ function beginningOfDay($character){
         }
         if($character->daysWithoutFood > 1){
             $character->strength--;
-            if($character->strength < 0){
+            $character->health--;
+            if($character->health < 0){
                 $event .= $character->nick . " starves to death.<br><br>";
                 $character->status = "Dead";
+                $character->place = $GLOBALS['place']--;
                 array_push($GLOBALS['deadToday'], $character->nick);
             }
         }
         if($character->daysOfWater == 0){
             $character->strength -= 1.5;
-            if($character->strength < 0){
+            $character->health -= 1.5;
+            if($character->health < 0){
                 $event .= $character->nick . " dies of thirst.<br><br>";
                 $character->status = "Dead";
+                $character->place = $GLOBALS['place']--;
                 array_push($GLOBALS['deadToday'], $character->nick);
             }
         } else {
@@ -217,25 +221,22 @@ function attackPlayer($character, $target){
                 } else {
                     $event .= (($target->gender == "m") ? "He" : "She") . " is successful in doing so.<br><br>";
                     $character->strength -= $target->modifiedStrength - $character->defense;
+                    $character->health -= $target->modifiedStrength - $character->defense;
+                    if($character->health < 0){
+                        $target->kills++;
+                        array_push($target->inventory, $character->inventory);
+                    }
                 }
             }
         } else {
             $event .= (($character->gender == "m") ? "He" : "She") . " makes a successful attack.<br><br>";
             $target->strength -= $character->modifiedStrength - $target->defense;
+            $target->health -= $character->modifiedStrength - $target->defense;
         }
     }
-//    if($character->strength < 0){
-//        array_push($events, $character->nick . " succumbs to " . (($character->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-//        $character->status = "Dead";
-//        array_push($GLOBALS['deadToday'], $character->nick);
-//    }
-//    if($target->strength < 0){
-//        array_push($events, $target->nick . " succumbs to " . (($target->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-//        $target->status = "Dead";
-//        array_push($GLOBALS['deadToday'], $target->nick);
-//    }
-    if($target->strength < 0){
+    if($target->health < 0){
         $character->kills++;
+        array_push($character->inventory, $target->inventory);
     }
     return $event;
 }
@@ -248,8 +249,11 @@ function triggerExplosive($character, $targets){
     $character->explosivesPlanted--;
     foreach ($targets as $target){
         $target->status = "Dead";
+        $target->place = $GLOBALS['place'];
+        array_push($character->inventory, $target->inventory);
         array_push($GLOBALS['deadToday'], $target->nick);
     }
+    $GLOBALS['place'] -= count($targets);
     $character->kills += count($targets);
     return $character->nick . " sets off an explosive, killing " . nameList($targets) . ".<br><br>";
 }
@@ -392,25 +396,31 @@ $events = [];
          }
      }
  }
- foreach($GLOBALS['castObject'] as $character){
-     if($character->status == "Alive"){
-         $sponsor = sponsor($character);
-         if($sponsor != ''){
-             array_push($events, $sponsor);
-         }
-     }
+ if((int) $_COOKIE['counter'] > 1){
+    foreach($GLOBALS['castObject'] as $character){
+        if($character->status == "Alive"){
+            $sponsor = sponsor($character);
+            if($sponsor != ''){
+                array_push($events, $sponsor);
+            }
+        }
+    }
  }
 foreach($GLOBALS['castObject'] as $character){
     if($character->actionTaken == "false" && $character->status == "Alive"){
         array_push($events, action($character));
     }
+    $deadNow = 0;
     foreach($GLOBALS['castObject'] as $fighter){
-      if($fighter->strength < 0 && $fighter->status == "Alive"){
+      if($fighter->health < 0 && $fighter->status == "Alive"){
         array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
         $fighter->status = "Dead";
+        $deadNow++;
+        $fighter->place = $GLOBALS['place'];
         array_push($GLOBALS['deadToday'], $fighter->nick);
       }
     }
+    $GLOBALS['place'] -= $deadNow;
     //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
 }
 //print_r2($events);
@@ -425,6 +435,11 @@ foreach($castObject as $character){
     }
 }
 if($playersAlive == 1){
+    foreach($castObject as $character){
+        if($character->status == "Alive"){
+            $character->place = 1;
+        }
+    }
     $nextDestination = 'winner.php';
 }
 ?>
@@ -464,6 +479,7 @@ if($playersAlive == 1){
               }
           });
           document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday'])?>';
+          document.cookie = "place=" + <?php echo $GLOBALS['place']?>;
           window.location = "<?php echo $nextDestination;?>";
     }
 </script>

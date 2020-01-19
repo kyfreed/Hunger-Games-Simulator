@@ -18,3 +18,7 @@ body{
 img {
     border: 1px solid;
 }
+table{
+    border-collapse: separate;
+    border-spacing: 15px;
+}

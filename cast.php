@@ -4,15 +4,20 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+  <?php
+  $castSize = $_GET['castSize'];
+  ?>
 <script>
     var cookie;
     function next(){
-      console.log($("#castForm").serialize());  
+      var castData = $("castForm").serializeArray()
+      var data = "castSize=" + <?php echo $castSize?> + "&castData=" + JSON.stringify(castData);
+      console.log(data);
       $.ajax({
             url: "construct.php",
             async: false,
             method: "POST",
-            data: $("#castForm").serialize(),
+            data: data,
             dataType: "text",
             success: function(castCookie){
                 cookie = castCookie;
@@ -32,7 +37,6 @@
         <div style="height:100%">
             <div class="container">
         <?php
-            $castSize = $_GET['castSize'];
             for($i = 0; $i < $castSize; $i+=3){
         ?>
                 
@@ -67,6 +71,9 @@
                                 <br>
                                 Strength (1-10):&nbsp;
                                 <input type="number" name="castStrength<?=$i+$j?>">
+                                <br>
+                                HP:
+                                <input type="number" name="castHealth<?=$i+$j?>">
                                 <br>
                                 Dexterity (1-10):&nbsp;
                                 <input type="number" name="castDex<?=$i+$j?>">
