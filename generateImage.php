@@ -4,11 +4,19 @@ $imageInitial = $_GET["imageInitial"];
 $r = $_GET['r'];
 $g = $_GET['g'];
 $b = $_GET['b'];
+function pickTextColorBasedOnBgColorSimple($bgColor, $lightColor, $darkColor) {
+  $color = (substr($bgColor,0, 1) === '#') ? substr($bgColor, 1) : $bgColor;
+  $r = hexdec(substr($color, 0, 2)); // hexToR
+  $g = hexdec(substr($color, 2, 2)); // hexToG
+  $b = hexdec(substr($color, 4, 2)); // hexToB
+  return ((($r * 0.299) + ($g * 0.587) + ($b * 0.114)) > 186) ?
+    $darkColor : $lightColor;
+}
 function pickTextColorBasedOnBgColorAdvanced($bgColor, $lightColor, $darkColor) {
   $color = (substr($bgColor,0, 1) === '#') ? substr($bgColor, 1) : $bgColor;
   $r = hexdec(substr($color, 0, 2)); // hexToR
   $g = hexdec(substr($color, 2, 2)); // hexToG
-  $b = hexdec(substr($color, 4, 2));
+  $b = hexdec(substr($color, 4, 2)); // hexToB
   $uicolors = [$r / 255, $g / 255, $b / 255];
   $c = [];
   for($i = 0; $i < 3; $i++){
@@ -25,14 +33,31 @@ function pickTextColorBasedOnBgColorAdvanced($bgColor, $lightColor, $darkColor) 
 //    return Math.pow((col + 0.055) / 1.055, 2.4);
 //  });
   $l = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
-  return ($l > 0.179) ? darkColor : lightColor;
+  return ($l > 0.179) ? $darkColor : $lightColor;
+}
+function fromRGB($R, $G, $B)
+{
+
+    $R = dechex($R);
+    if (strlen($R)<2)
+    $R = '0'.$R;
+
+    $G = dechex($G);
+    if (strlen($G)<2)
+    $G = '0'.$G;
+
+    $B = dechex($B);
+    if (strlen($B)<2)
+    $B = '0'.$B;
+
+    return '#' . $R . $G . $B;
 }
 $size = imagettfbbox(72, 0, "sourcecodeprosemibold.ttf", $imageInitial);
 $x = round((90 - $size[2]) / 2) - 3;
 $y = round((90 - $size[5]) / 2);
 $img = imagecreate(90, 90);
 $background = imagecolorallocate( $img, $r, $g, $b );
-$colour = pickTextColorBasedOnBgColorAdvanced($background, "#FFFFFF", "#000000");
+$colour = pickTextColorBasedOnBgColorSimple(fromRGB($r, $g, $b), "#FFFFFF", "#000000");
 if($colour == "#000000"){
     $text_colour = imagecolorallocate( $img, 0, 0, 0 );
 } else {
@@ -40,3 +65,4 @@ if($colour == "#000000"){
 }
 imagettftext($img, 72, 0, $x, $y, $text_colour, "sourcecodeprosemibold.ttf", $imageInitial);
 echo imagepng($img);
+//echo pickTextColorBasedOnBgColorSimple(fromRGB($r, $g, $b), "#FFFFFF", "#000000");

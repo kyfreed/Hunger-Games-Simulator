@@ -10,26 +10,25 @@
               return $digits;
           }
           $castSize = $_POST['castSize'];
-          $castData = $_POST['castData'];
           $castObject = [];
           for($i = 0; $i < $castSize; $i++){
             $r = strval(rand(0, 255));
             $g = strval(rand(0, 255));
             $b = strval(rand(0, 255));
             $tempObject->name = htmlspecialchars($_POST["castName" . $i]);
-            $tempObject->nick = (($_POST["castNick" . $i] != "") ? htmlspecialchars($_POST["castNick" . $i]) : $tempObject->name);
+            $tempObject->nick = ((in_array("castNick" . $i, $_POST)) ? htmlspecialchars($_POST["castNick" . $i]) : $tempObject->name);
             $tempObject->gender = $_POST["castGender" . $i];
-            $tempObject->disposition = (($_POST["castDisposition" . $i] != "") ? (int) $_POST["castDisposition" . $i] : 5);
-            $tempObject->strength = (($_POST["castStrength" . $i] != "") ? (int) $_POST["castStrength" . $i] : 5);
+            $tempObject->disposition = ((in_array("castDisposition" . $i, $_POST)) ? (int) $_POST["castDisposition" . $i] : 5);
+            $tempObject->strength = ((in_array("castStrength" . $i, $_POST)) ? (int) $_POST["castStrength" . $i] : 5);
 
-            $tempObject->health = (($_POST["castHealth" . $i] != "") ? (int) $_POST["castHealth" . $i] : 5);
+            $tempObject->health = ((in_array("castHealth" . $i, $_POST)) ? (int) $_POST["castHealth" . $i] : 5);
             $tempObject->maxStrength = $tempObject->strength;
             $tempObject->modifiedStrength = $tempObject->strength / 5;
-            $tempObject->dexterity = (($_POST["castDex" . $i] != "") ? (int) $_POST["castDex" . $i] : 5);
-            $tempObject->intelligence = (($_POST["castInt" . $i] != "") ? (int) $_POST["castInt" . $i] : 5);
-            $tempObject->charisma = (($_POST["castCha" . $i] != "") ? (int) $_POST["castCha" . $i] : 5);
+            $tempObject->dexterity = ((in_array("castDex" . $i, $_POST)) ? (int) $_POST["castDex" . $i] : 5);
+            $tempObject->intelligence = ((in_array("castInt" . $i, $_POST)) ? (int) $_POST["castInt" . $i] : 5);
+            $tempObject->charisma = ((in_array("castCha" . $i, $_POST)) ? (int) $_POST["castCha" . $i] : 5);
             $tempObject->defense = 0;
-            $tempObject->image = (($_POST["castImage" . $i] != "") ? $_POST["castImage" . $i] : "generateImage.php?imageInitial=" . substr(htmlspecialchars($_POST["castName" . $i]),0,1) . "&r=" . $r . "&g=" . $g . "&b=" . $b);
+            $tempObject->image = ((in_array("castImage" . $i, $_POST)) ? $_POST["castImage" . $i] : "generateImage.php?imageInitial=" . substr(htmlspecialchars($_POST["castName" . $i]),0,1) . "&r=" . $r . "&g=" . $g . "&b=" . $b);
             $tempObject->status = "Alive";
             $tempObject->actionTaken = "false";
             $tempObject->daysOfFood = 1;

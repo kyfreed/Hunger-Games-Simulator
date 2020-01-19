@@ -10,8 +10,7 @@
 <script>
     var cookie;
     function next(){
-      var castData = $("castForm").serializeArray()
-      var data = "castSize=" + <?php echo $castSize?> + "&castData=" + JSON.stringify(castData);
+      var data = "castSize=" + <?php echo $castSize?> + "&" + $("input").filter(function(index){return $(this).val() != "";}).serialize() + "&" + $("select").serialize();
       console.log(data);
       $.ajax({
             url: "construct.php",
@@ -43,25 +42,25 @@
                         <div class="row">
                             <?php
                             for($j = 0; $j < 3; $j++){
-                                if($i + $j <= $castSize){
+                                if($i + $j < $castSize){
                             ?>
                             <div class="col-lg-4">
-                                <strong><u>Cast member <?=$i+$j?></u></strong>
+                                <strong><u>Cast member <?=$i+$j+1?></u></strong>
                                 <br>
                                 Name:&nbsp;
-                                <input type="text" id=castName<?=$i+$j?>" name="castName<?=$i+$j?>">
+                                <input type="text" id="castName<?=$i+$j?>" name="castName<?=$i+$j?>">
                                 <br>
                                 Nickname:&nbsp;
-                                <input type="text" id=castNick<?=$i+$j?>" name="castNick<?=$i+$j?>">
+                                <input type="text" id="castNick<?=$i+$j?>" name="castNick<?=$i+$j?>">
                                 <br>
                                 Gender:&nbsp;
-                                <select name="castGender<?=$i+$j?>">
+                                <select id="castGender<?=$i+$j?>" name="castGender<?=$i+$j?>">
                                 <option value="m">M</option>
                                 <option value="f">F</option>
                                 </select>
                                 <br>
                                 Aggression:&nbsp;
-                                <select name="castDisposition<?=$i+$j?>">
+                                <select id="castDisposition<?=$i+$j?>" name="castDisposition<?=$i+$j?>">
                                     <option value="1">Very Passive</option>
                                     <option value="2">Passive</option>
                                     <option value="3" selected>Neutral</option>
@@ -70,22 +69,22 @@
                                 </select>
                                 <br>
                                 Strength (1-10):&nbsp;
-                                <input type="number" name="castStrength<?=$i+$j?>">
+                                <input type="number" id="castStrength<?=$i+$j?>" name="castStrength<?=$i+$j?>">
                                 <br>
                                 HP:
-                                <input type="number" name="castHealth<?=$i+$j?>">
+                                <input type="number" id="castHealth<?=$i+$j?>" name="castHealth<?=$i+$j?>">
                                 <br>
                                 Dexterity (1-10):&nbsp;
-                                <input type="number" name="castDex<?=$i+$j?>">
+                                <input type="number" id="castDex<?=$i+$j?>" name="castDex<?=$i+$j?>">
                                 <br>
                                 Intelligence (1-10):&nbsp;
-                                <input type="number" name="castInt<?=$i+$j?>">
+                                <input type="number" id="castInt<?=$i+$j?>" name="castInt<?=$i+$j?>">
                                 <br>
                                 Charisma (1-10):&nbsp;
-                                <input type="number" name="castCha<?=$i+$j?>">
+                                <input type="number" id="castCha<?=$i+$j?>" name="castCha<?=$i+$j?>">
                                 <br>
                                 Image URL:&nbsp;
-                                <input type="text" name="castImage<?=$i+$j?>">
+                                <input type="text" id="castImage<?=$i+$j?>" name="castImage<?=$i+$j?>">
                                 <br>
                                 <br>
                             </div>
