@@ -1,4 +1,7 @@
- <link rel="stylesheet" type="text/css" href="bloodbath.css?v=1.2">
+<?php
+session_start();
+?> 
+<link rel="stylesheet" type="text/css" href="bloodbath.css?v=1.2">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -7,7 +10,7 @@
   <title>Hunger Games Simulator</title>
 <?php
 $deadToday = [];
-$castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
+$castObject = json_decode($_SESSION['castObject']);
 $castSize = count($castObject);
 $place = (int)$_COOKIE['place'];
 //echo $place;
@@ -286,11 +289,12 @@ function avg_strength($array){
   return "";
 }
     function next(){
+        console.log("castObject=" + JSON.stringify(<?= json_encode($castObject)?>));
         $.ajax({
               url: "editFile.php",
               async: false,
               method: "POST",
-              data: "castObject=" + JSON.stringify(<?= json_encode($castObject)?>) + "&fileName=" + getCookie("castObjectFile"),
+              data: "castObject=" + JSON.stringify(<?= json_encode($castObject)?>),
               dataType: "text",
               success: function(response){
                   console.log(response);
