@@ -292,8 +292,8 @@ function avg_strength($array){
               method: "POST",
               data: "castObject=" + JSON.stringify(<?= json_encode($castObject)?>) + "&fileName=" + getCookie("castObjectFile"),
               dataType: "text",
-              success: function(castCookie){
-                  cookie = castCookie;
+              success: function(response){
+                  console.log(response);
               },
               error: function(jqXHR, textStatus, errorThrown){
                   console.log(textStatus);
