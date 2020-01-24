@@ -41,6 +41,7 @@ function avg_strength($array){
           $events = [];
           for($i = 0; $i < count($items); $i++){ //Go through all items available.
               $fightArray = [];
+              $otherFighters = [];
               foreach($GLOBALS['castObject'] as $character){
                   if(in_array($i, $character->desiredItems)){
                       array_push($fightArray,$character);
@@ -65,8 +66,8 @@ function avg_strength($array){
                     $otherFighters = removeFromArray($strongestCharacter, $fightArray);
                     //print_r2($otherFighters);
                     foreach($fightArray as $fighter){
-                            $fighter->strength -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 1.35);
-                            $fighter->health -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 1.35);
+                            $fighter->strength -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 0.75);
+                            $fighter->health -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 0.75);
                             $fighter->modifiedStrength = calculateModifiedStrength($fighter);
                     }
                     unset($strongestCharacter->desiredItems[array_search($i, $strongestCharacter->desiredItems)]);
@@ -81,16 +82,21 @@ function avg_strength($array){
                       $fighter->status = "Dead";
                       $deadNow++;
                       $fighter->place = $GLOBALS['place'];
+                      $fighter->killedBy = nameList(removeFromArray($fighter, $fightArray));
                       array_push($GLOBALS['deadToday'], $fighter->nick);
                       $fighter->desiredItems = [];
+                      array_merge($strongestCharacter->inventory, $fighter->inventory);
+                      foreach($fighter->inventory as $item){
+                          if($item != "backpack"){
+                              addItemToInventory($item, $strongestCharacter);
+                          }
+                      }
                       foreach(removeFromArray($fighter, $fightArray) as $victor){
                           $victor->kills++;
                       }
                   }
               }
               $GLOBALS['place'] -= $deadNow;
-              unset($fightArray);
-              unset($otherFighters);
           }
           //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
           return $events;
@@ -126,7 +132,7 @@ function avg_strength($array){
       function initializeItems(){
           global $castSize;
           $items = [];
-          for($i = 0; $i < 1.5 * $castSize; $i++){
+          for($i = 0; $i < 2 * $castSize; $i++){
               array_push($items,"day's worth of rations");
               array_push($items,"canteen");
           }
@@ -253,13 +259,21 @@ function avg_strength($array){
             if($character->intelligence <= 3 && 1 - ($character->intelligence * 0.025) < f_rand()){
                 array_push($events, $character->nick . " steps off " . (($fighter->gender == "m") ? "his" : "her") . " podium too early and explodes.<br><br>");
                 $character->status = "Dead";
+                $character->killedBy = (($fighter->gender == "m") ? "his" : "her") . "podium";
                 $character->place = $GLOBALS['place']--;
                 array_push($GLOBALS['deadToday'], $character->nick);
                 $character->desiredItems = [];
                 
             }
-            for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){
-                array_push($character->desiredItems,round(rand(0,count($items)-1)));
+            $runawayChance = [0.8, 0.65, 0.35, 0.15, 0.05];
+            if(1 - $runawayChance[$character->disposition - 1] < f_rand() && $character->status == "Alive"){
+                array_push($events, $character->nick . " runs away from the Cornucopia.<br><br>");
+            } else {
+                for($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++){
+                    if($character->status == "Alive"){
+                        array_push($character->desiredItems,round(rand(0,count($items)-1)));
+                    }
+                }
             }
         }
         $events += compareItems($items);
@@ -289,12 +303,13 @@ function avg_strength($array){
   return "";
 }
     function next(){
-        console.log("castObject=" + JSON.stringify(<?= json_encode($castObject)?>));
+        console.log(JSON.stringify(<?= json_encode($castObject)?>));
         $.ajax({
               url: "editFile.php",
               async: false,
               method: "POST",
-              data: "castObject=" + JSON.stringify(<?= json_encode($castObject)?>),
+              data: JSON.stringify(<?= json_encode($castObject)?>),
+              contentType: "text/plain",
               dataType: "text",
               success: function(response){
                   console.log(response);

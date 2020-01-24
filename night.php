@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <link rel="stylesheet" type="text/css" href="night.css?v=1.14">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
@@ -10,7 +13,7 @@ crossorigin="anonymous"></script>
       <h1>Night <?=$_COOKIE['counter']?></h1>
 <?php
 //setcookie("counter", ((int) $_COOKIE['counter']) + 1, 0, "/");
-$castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
+$castObject = json_decode($_SESSION['castObject']);
           shuffle($castObject);
           //print_r2($castObject);
           $castSize = count($castObject);
@@ -31,6 +34,21 @@ function print_r2($val){ //Prints an object to the page in a readable format.
         print_r($val);
         echo  '</pre>';
 }
+function addItemToInventory($item, $character){
+          $events = '';
+          if($item == "day's worth of rations"){
+              $character->daysOfFood++;
+          }
+          if($item == "canteen" || $item == "some water"){
+              $character->daysOfWater++;
+          }
+          if($item == "bow and quiver"){
+              $character->arrows += 20;
+          }
+          $character->modifiedStrength = calculateModifiedStrength($character);
+          return $events;
+}
+
 function calculateModifiedStrength($character){
     $modStr = 0;
 
@@ -118,6 +136,11 @@ function attackPlayer($character, $target){
                     $character->health -= $target->modifiedStrength - $character->defense;
                     if($character->health < 0){
                         $target->kills++;
+                        $character->killedBy = $target->nick;
+                        array_merge($target->inventory, $character->inventory);
+                        foreach($character->inventory as $item){
+                            $event .= addItemToInventory($item, $target);
+                        }
                     }
                 }
             }
@@ -131,6 +154,11 @@ function attackPlayer($character, $target){
         }
     if($target->health < 0){
         $character->kills++;
+        $target->killedBy = $character->nick;
+        array_merge($character->inventory, $target->inventory);
+        foreach($target->inventory as $item){
+            $event .= addItemToInventory($item, $character);
+        }
     }
     return $event;
 }
@@ -193,11 +221,15 @@ function weightedActionChoice($character){
                   $deadNow++;
                   array_push($GLOBALS['deadToday'], $fighter->nick);
                 }
+                if($fighter->strength < 0){
+                    $fighter->strength = 0;
+                }
               }
               $GLOBALS['place'] -= $deadNow;
               //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
           }
           //print_r2($events);
+          //print_r2($castObject);
           showEvents($events);
           $playersAlive = 0;
           $nextDestination = 'day.php';
@@ -242,10 +274,11 @@ function weightedActionChoice($character){
               url: "editFile.php",
               async: false,
               method: "POST",
-              data: "castObject=" + JSON.stringify(<?= json_encode($castObject)?>) + "&fileName=" + getCookie("castObjectFile"),
+              data: JSON.stringify(<?= json_encode($castObject)?>),
+              contentType: "text/plain",
               dataType: "text",
-              success: function(castCookie){
-                  cookie = castCookie;
+              success: function(response){
+                  console.log(response);
               },
               error: function(jqXHR, textStatus, errorThrown){
                   console.log(textStatus);

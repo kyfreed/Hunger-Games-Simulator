@@ -1,4 +1,5 @@
 <?php
+session_start();
           function randomDigits(){
               do{
                 clearstatcache();
@@ -18,7 +19,7 @@
             $tempObject->name = htmlspecialchars($_POST["castName" . $i]);
             $tempObject->nick = ((in_array("castNick" . $i, $_POST)) ? htmlspecialchars($_POST["castNick" . $i]) : $tempObject->name);
             $tempObject->gender = $_POST["castGender" . $i];
-            $tempObject->disposition = ((in_array("castDisposition" . $i, $_POST)) ? (int) $_POST["castDisposition" . $i] : 5);
+            $tempObject->disposition = $_POST["castDisposition" . $i];
             $tempObject->strength = ((in_array("castStrength" . $i, $_POST)) ? (int) $_POST["castStrength" . $i] : 5);
 
             $tempObject->health = ((in_array("castHealth" . $i, $_POST)) ? (int) $_POST["castHealth" . $i] : 5);
@@ -46,6 +47,5 @@
             $tempObject->place = 0;
             array_push($castObject,clone $tempObject);
           }
-          $filename = "castObject" . randomDigits() . ".txt";
-          file_put_contents($filename, json_encode($castObject));
+          $_SESSION['castObject'] = $castObject;
 echo $filename;

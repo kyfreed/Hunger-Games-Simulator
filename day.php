@@ -1,4 +1,10 @@
-<link rel="stylesheet" type="text/css" href="day.css?v=1.6">
+<?php
+session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+<link rel="stylesheet" type="text/css" href="day.css?v=<?= filemtime("day.css")?>">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -8,7 +14,8 @@
   <div class="text-center" style="height: 100%">
       <h1>Day <?=$_COOKIE['counter']?></h1>
 <?php
-$castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
+$castObject = json_decode($_SESSION['castObject']);
+//print_r2($castObject);
           shuffle($castObject);
           $castSize = count($castObject);
 $deadToday = json_decode($_COOKIE['deadToday']);
@@ -48,7 +55,7 @@ function print_r2($val){ //Prints an object to the page in a readable format.
 }
 function beginningOfDay($character){
     $event = '';
-        if($character->daysOfFood == 0){
+        if($character->daysOfFood < 0){
             $character->daysWithoutFood++;
         } else {
             $character->daysOfFood--;
@@ -56,25 +63,31 @@ function beginningOfDay($character){
         }
         if($character->daysWithoutFood > 1){
             $character->strength--;
-            $character->health--;
+            $character->health -= 0.5;
+            $character->modifiedStrength = calculateModifiedStrength($character);
             if($character->health < 0){
                 $event .= $character->nick . " starves to death.<br><br>";
                 $character->status = "Dead";
                 $character->place = $GLOBALS['place']--;
+                $character->killedBy = "starvation";
                 array_push($GLOBALS['deadToday'], $character->nick);
             }
         }
-        if($character->daysOfWater == 0){
+        $character->daysOfWater--;
+        if($character->daysOfWater < 0){
             $character->strength -= 1.5;
-            $character->health -= 1.5;
-            if($character->health < 0){
+            $character->modifiedStrength = calculateModifiedStrength($character);
+            if($character->daysOfWater == -4){
                 $event .= $character->nick . " dies of thirst.<br><br>";
                 $character->status = "Dead";
                 $character->place = $GLOBALS['place']--;
+                $character->killedBy = "dehydration";
                 array_push($GLOBALS['deadToday'], $character->nick);
             }
         } else {
-        $character->daysOfWater++;
+            if(in_array("canteen", $character->inventory)){
+                $character->inventory[array_search("canteen", $character->inventory)] = "empty canteen";
+            }
         }
     return $event;
 }
@@ -157,13 +170,19 @@ function getCharacterByEvent($event){
     }
 function lookForWater($character){
     $event = $character->nick . " goes searching for water.<br><br>" . (($character->gender == "m") ? "He" : "She");
-    if((0.05 * $character->intelligence) + 0.4 > f_rand()){
+    if((0.05 * $character->intelligence) + 0.6 > f_rand()){
         $character->daysOfWater++;
+        $character->daysWithoutWater = 0;
         $event .= " finds a water source and drinks from it.<br><br>";
-        if(in_array("canteen", $character->inventory)){
-            $canteens = array_count_values($character->inventory)["canteen"];
+        if(in_array("empty canteen", $character->inventory)){
+            $canteens = array_count_values($character->inventory)["empty canteen"];
             $event .= (($character->gender == "m") ? "He" : "She") . " fills " . (($character->gender == "m") ? "his" : "her") . " canteen" . (($canteens == 1) ? "" : "s") . ".<br><br>";
             $character->daysOfWater += $canteens;
+            for($i = 0; $i < count($character->inventory); $i++){
+                if($character->inventory[$i] == "empty canteen"){
+                    $character->inventory[$i] = "canteen";
+                }
+            }
         }
         if(in_array("fishing gear", $character->inventory)){
             $catchResults = floor((($character->dexterity * $character->intelligence) / 2) * f_rand(0.15, 0.45));
@@ -183,6 +202,9 @@ function lookForFood($character){
             $foodGain = rand(2, 5);
             $event .= " is successful. " . (($character->gender == "m") ? "He" : "She") . " gains " . $foodGain . " days' worth of food.<br><br>";
             $character->daysOfFood += $foodGain;
+            for($i = 0; $i < $foodGain; $i++){
+                array_push($character->inventory, "a day's worth of rations");
+            }
             $character->daysWithoutFood = 0;
             
         } else {
@@ -191,6 +213,7 @@ function lookForFood($character){
     } else {
         if((0.05 * $character->intelligence) + 0.4 > f_rand()){
         $character->daysOfFood++;
+        array_push($character->inventory, "a day's worth of rations");
         $character->daysWithoutFood = 0;
         $event .= " finds some wild fruit and gains a day's worth of food.<br><br>";
         } else {
@@ -224,7 +247,11 @@ function attackPlayer($character, $target){
                     $character->health -= $target->modifiedStrength - $character->defense;
                     if($character->health < 0){
                         $target->kills++;
-                        array_push($target->inventory, $character->inventory);
+                        $character->killedBy = $target->nick;
+                        array_merge($target->inventory, $character->inventory);
+                        foreach($character->inventory as $item){
+                            $event .= addItemToInventory($item, $target);
+                        }
                     }
                 }
             }
@@ -236,7 +263,11 @@ function attackPlayer($character, $target){
     }
     if($target->health < 0){
         $character->kills++;
-        array_push($character->inventory, $target->inventory);
+        $target->killedBy = $character->nick;
+        array_merge($character->inventory, $target->inventory);
+        foreach($target->inventory as $item){
+            $event .= addItemToInventory($item, $character);
+        }
     }
     return $event;
 }
@@ -250,7 +281,11 @@ function triggerExplosive($character, $targets){
     foreach ($targets as $target){
         $target->status = "Dead";
         $target->place = $GLOBALS['place'];
-        array_push($character->inventory, $target->inventory);
+        $target->killedBy = $character->nick ."'s explosive";
+        array_merge($character->inventory, $target->inventory);
+        foreach($target->inventory as $item){
+            addItemToInventory($item, $character);
+        }
         array_push($GLOBALS['deadToday'], $target->nick);
     }
     $GLOBALS['place'] -= count($targets);
@@ -261,6 +296,10 @@ function triggerTrap($character){
     $event = '';
     $event .= $character->nick . " steps on a bear trap.<br><br>";
     $character->strength -= 3;
+    $character->health -= 3;
+    if($character->health < 0){
+        $character->killedBy = "a bear trap";
+    }
     return $event;
 }
 
@@ -291,9 +330,6 @@ function nameList($array){
 }
 function addItemToInventory($item, $character){
           $events = '';
-          if($item == "backpack"){
-              $events .= fillBackpack($character);
-          }
           if($item == "day's worth of rations"){
               $character->daysOfFood++;
           }
@@ -361,10 +397,10 @@ function weightedActionChoice($character){
     $attackChance = [0.05, 0.15, 0.35, 0.65, 0.85];
     if(0.25 > f_rand() && 0.04 * $character->intelligence > f_rand()){
         return "trigger trap";
-    } else if($character->daysOfFood < 2){
-        return "look for food";
     } else if ($character->daysOfWater < 2){
         return "look for water";
+    } else if($character->daysOfFood < 2){
+        return "look for food";
     } else if ($character->strength < 1.5 && in_array("a first aid kit", $character->inventory)){ 
         return "heal";
     } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition-2) > f_rand()){
@@ -380,10 +416,10 @@ function weightedActionChoice($character){
     } else if($attackChance[$character->disposition - 1] > f_rand()){
         return "attack another player";
     } else {
-        if(($character->daysOfWater/$character->daysOfFood) * 0.5 > f_rand()){
-            return "look for food";
-        } else {
+        if(($character->daysOfFood/$character->daysOfWater) * 0.5 > f_rand()){
             return "look for water";
+        } else {
+            return "look for food";
         }
     }
 }
@@ -418,6 +454,9 @@ foreach($GLOBALS['castObject'] as $character){
         $deadNow++;
         $fighter->place = $GLOBALS['place'];
         array_push($GLOBALS['deadToday'], $fighter->nick);
+      }
+      if($fighter->strength < 0){
+          $fighter->strength = 0;
       }
     }
     $GLOBALS['place'] -= $deadNow;
@@ -468,10 +507,11 @@ if($playersAlive == 1){
               url: "editFile.php",
               async: false,
               method: "POST",
-              data: "castObject=" + JSON.stringify(<?= json_encode($castObject)?>) + "&fileName=" + getCookie("castObjectFile"),
+              data: JSON.stringify(<?= json_encode($castObject)?>),
+              contentType: "text/plain",
               dataType: "text",
-              success: function(castCookie){
-                  cookie = castCookie;
+              success: function(response){
+                  console.log(response);
               },
               error: function(jqXHR, textStatus, errorThrown){
                   console.log(textStatus);
