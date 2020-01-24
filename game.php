@@ -1,16 +1,20 @@
-<link rel="stylesheet" type="text/css" href="game.css?v=1.6">
+<?php
+session_start();
+?>
+<link rel="stylesheet" type="text/css" href="game.css?v=<?= filemtime("game.css")?>">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
   <?php
-  $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
+  $castObject = json_decode($_SESSION['castObject']);
+  //print_r2($castObject);
   $castSize = count($castObject);
   ?>
 <script>
     function showCastData(){
-            $("#castObject").val(<?= json_encode(file_get_contents($_COOKIE['castObjectFile']))?>);
+            $("#castObject").val(<?= json_encode($_SESSION['castObject'])?>);
     }
     function next(){
         document.cookie = "deadToday=[]";

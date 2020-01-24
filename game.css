@@ -24,7 +24,7 @@ h1,h4{
 }
 img {
     border: 1px solid;
-    box-shadow: 5px -10px 8px #114611;
+    box-shadow: 5px -10px 8px rgba(0, 0, 0, 0.5);
 }
 textarea, input, select {
     background-color: #fff !important;

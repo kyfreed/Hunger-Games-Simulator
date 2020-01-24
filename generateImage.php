@@ -1,5 +1,8 @@
 <?php
 header('Content-type:image/png');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 $imageInitial = $_GET["imageInitial"];
 $r = $_GET['r'];
 $g = $_GET['g'];
@@ -58,7 +61,8 @@ $y = round((90 - $size[5]) / 2);
 $img = imagecreate(90, 90);
 $background = imagecolorallocate( $img, $r, $g, $b );
 $colour = pickTextColorBasedOnBgColorSimple(fromRGB($r, $g, $b), "#FFFFFF", "#000000");
-if($colour == "#000000"){
+$percentRGB = [$r / 255, $g / 255, $b /255];
+if(sqrt(0.299 * ($percentRGB[0] ** 2) + 0.587 * ($percentRGB[1] ** 2) + 0.114 * ($percentRGB[2] ** 2)) > 0.179){
     $text_colour = imagecolorallocate( $img, 0, 0, 0 );
 } else {
     $text_colour = imagecolorallocate( $img, 255, 255, 255 );

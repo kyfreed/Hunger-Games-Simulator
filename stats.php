@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="stats.css?v=<?= filemtime('stats.css') ?>">
 <script
@@ -8,7 +11,7 @@ crossorigin="anonymous"></script>
   <body>
       <h1 style="text-align: center;">Final Stats</h1>
   <?php
-  $castObject = json_decode(file_get_contents($_COOKIE['castObjectFile']));
+  $castObject = json_decode($_SESSION['castObject']);
   function cmp($a, $b)
 {
     return ($a->orderMarker < $b->orderMarker) ? -1 : 1;
@@ -33,6 +36,11 @@ foreach ($castObject as $castMember){
     echo '<td>' . $castMember->kills . " kill" . ($castMember->kills != 1 ? "s" : "") . "</td>";
     echo '<td>' . $castMember->daysAlive . " day" . ($castMember->daysAlive != 1 ? "s" : "") . " survived</td>";
     echo '<td>' . $placeOrdinal . " place</td>";
+    if(property_exists($castMember, "killedBy")){
+        echo '<td>Killed by ' . $castMember->killedBy . '</td>';
+    } else {
+        echo '<td></td>';
+    }
     echo '</tr>';
 }
 echo "</table>";
