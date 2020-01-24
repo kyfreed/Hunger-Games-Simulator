@@ -259,7 +259,7 @@ function avg_strength($array){
             if($character->intelligence <= 3 && 1 - ($character->intelligence * 0.025) < f_rand()){
                 array_push($events, $character->nick . " steps off " . (($fighter->gender == "m") ? "his" : "her") . " podium too early and explodes.<br><br>");
                 $character->status = "Dead";
-                $character->killedBy = (($fighter->gender == "m") ? "his" : "her") . "podium";
+                $character->killedBy = (($fighter->gender == "m") ? "his" : "her") . " podium";
                 $character->place = $GLOBALS['place']--;
                 array_push($GLOBALS['deadToday'], $character->nick);
                 $character->desiredItems = [];
