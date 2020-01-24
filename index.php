@@ -36,7 +36,7 @@ and open the template in the editor.
         </script>
         <title>Hunger Games Simulator</title>
     </head>
-    <body style="background-color: #228C22;">
+    <body style="background-color: #228C22; height: 100%;">
         <h1>Hunger Games Simulator</h1>
         <h4>Inspired by <a href="http://brantsteele.net/hungergames" target="_blank" style="color: #8C4814;
     font-family:'SkipStd-B-AlphaNum'; text-decoration: underline;">BrantSteele</a></h4>
@@ -53,5 +53,6 @@ and open the template in the editor.
             <textarea id="castObject" name="castObject" rows="25" cols="25"></textarea>
             <br>
             <button type="button" class="btn btn-success" onclick="createCast()">Go!</button>
+            <footer style="position: absolute; bottom: 0px;">v1.0.0.2</footer>
     </body>
 </html>
