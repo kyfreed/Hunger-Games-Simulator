@@ -7,15 +7,44 @@ session_start();
 src="https://code.jquery.com/jquery-3.4.1.min.js"
 integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
 crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function(){
+        $("#sortBy").val("<?php echo $_GET['sortBy']?>");
+        $("#sortBy").change(function(){
+            window.location = "/stats.php?sortBy=" + $("#sortBy").val(); 
+        });
+    });
+</script>
   <title>Hunger Games Simulator</title>
   <body>
       <h1 style="text-align: center;">Final Stats</h1>
+      Sort by &nbsp;<select id="sortBy" style="background-color: #000;">
+          <option value="orderMarker">original order</option>
+          <option value="place">place</option>
+          <option value="kills">number of kills</option>
+          <option value="daysAlive">days survived</option>
+      </select>
   <?php
-  $castObject = json_decode($_SESSION['castObject']);
-  function cmp($a, $b)
-{
-    return ($a->orderMarker < $b->orderMarker) ? -1 : 1;
-}
+    $castObject = json_decode($_SESSION['castObject']);
+    function cmp($a, $b) {
+        switch ($_GET['sortBy']){
+            case "orderMarker":
+                return ($a->orderMarker < $b->orderMarker) ? -1 : 1;
+                break;
+            case "place":
+                if($a->place == $b->place){
+                    return 0;
+                } else {
+                    return ($a->place < $b->place) ? -1 : 1;
+                }
+                break;
+            case "kills":
+                return ($a->kills > $b->kills) ? -1 : 1;
+                break;
+            case "daysAlive":
+                return ($a->daysAlive > $b->daysAlive) ? -1 : 1;
+        }
+    }
 usort($castObject, "cmp");
 echo "<table>";
 foreach ($castObject as $castMember){

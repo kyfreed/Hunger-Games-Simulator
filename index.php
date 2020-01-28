@@ -53,6 +53,6 @@ and open the template in the editor.
             <textarea id="castObject" name="castObject" rows="25" cols="25"></textarea>
             <br>
             <button type="button" class="btn btn-success" onclick="createCast()">Go!</button>
-            <footer style="position: absolute; bottom: 0px;">v1.0.0.2</footer>
+            <footer style="position: absolute; bottom: 0px;">v1.0.1</footer>
     </body>
 </html>

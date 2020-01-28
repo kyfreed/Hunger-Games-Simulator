@@ -18,15 +18,11 @@
             method: "POST",
             data: data,
             dataType: "text",
-            success: function(castCookie){
-                cookie = castCookie;
-            },
             error: function(jqXHR, textStatus, errorThrown){
                 console.log(textStatus);
                 console.log(errorThrown);
             }
         });
-        document.cookie = "castObjectFile=" + cookie;
         window.location = "game.php";
     }
 </script>

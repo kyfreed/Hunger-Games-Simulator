@@ -11,6 +11,7 @@ session_start();
 <?php
 $deadToday = [];
 $castObject = json_decode($_SESSION['castObject']);
+shuffle($castObject);
 $castSize = count($castObject);
 $place = (int)$_COOKIE['place'];
 //echo $place;

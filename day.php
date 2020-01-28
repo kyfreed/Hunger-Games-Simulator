@@ -211,7 +211,7 @@ function lookForFood($character){
             $event .= " misses.<br><br>";
         }
     } else {
-        if((0.05 * $character->intelligence) + 0.4 > f_rand()){
+        if((0.05 * $character->intelligence) + 0.5 > f_rand()){
         $character->daysOfFood++;
         array_push($character->inventory, "a day's worth of rations");
         $character->daysWithoutFood = 0;
@@ -311,6 +311,11 @@ function heal($character){
     } else {
         $character->strength = $character->maxStrength;
     }
+    if($character->health + 1 <= $character->maxStrength){
+        $character->health += 1;
+    } else {
+        $character->health = $character->maxStrength;
+    }
     $character->inventory = removeFromArray("a first aid kit", $character->inventory);
     return $event;
 }
@@ -401,7 +406,7 @@ function weightedActionChoice($character){
         return "look for water";
     } else if($character->daysOfFood < 2){
         return "look for food";
-    } else if ($character->strength < 1.5 && in_array("a first aid kit", $character->inventory)){ 
+    } else if ($character->strength < $character->maxStrength * 0.3 && in_array("a first aid kit", $character->inventory)){ 
         return "heal";
     } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition-2) > f_rand()){
         return "plant explosive";

@@ -9,7 +9,6 @@ session_start();
   crossorigin="anonymous"></script>
   <?php
   $castObject = json_decode($_SESSION['castObject']);
-  //print_r2($castObject);
   $castSize = count($castObject);
   ?>
 <script>
