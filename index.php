@@ -14,7 +14,7 @@ and open the template in the editor.
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
         <script>
-            function createCast(){
+            function createCast(url){
                 var cookie;
                 $.ajax({
                     url: "writeFile.php",
@@ -22,16 +22,12 @@ and open the template in the editor.
                     method: "POST",
                     data: $("#castObject").serialize(),
                     dataType: "text",
-                    success: function(castCookie){
-                        cookie = castCookie;
-                    },
                     error: function(jqXHR, textStatus, errorThrown){
                         console.log(textStatus);
                         console.log(errorThrown);
                     }
                 });
-                document.cookie = "castObjectFile=" + cookie;
-                window.location = "game.php";
+                window.location = url;
             }
         </script>
         <title>Hunger Games Simulator</title>
@@ -45,14 +41,15 @@ and open the template in the editor.
             <input type="number" id="castSize" name="castSize">
             <br>
             <br>
-            <button type="submit" class="btn btn-primary">Edit cast</button>
+            <button type="submit" class="btn btn-primary">Create cast</button>
         </form>
         <br>
         <p>Or, paste cast data here:</p>
             <br>
             <textarea id="castObject" name="castObject" rows="25" cols="25"></textarea>
             <br>
-            <button type="button" class="btn btn-success" onclick="createCast()">Go!</button>
-            <footer style="position: absolute; bottom: 0px;">v1.0.1</footer>
+            <button type="button" class="btn btn-primary" onclick="createCast('castEdit.php')">Edit cast</button>
+            <button type="button" class="btn btn-success" onclick="createCast('game.php')">Go!</button>
+            <footer style="position: absolute; bottom: 0px;">v1.1</footer>
     </body>
 </html>

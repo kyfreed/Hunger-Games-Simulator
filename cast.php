@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <link rel="stylesheet" type="text/css" href="game.css?<?= filemtime("game.css")?>">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <script
@@ -8,7 +11,6 @@
   $castSize = $_GET['castSize'];
   ?>
 <script>
-    var cookie;
     function next(){
       var data = "castSize=" + <?php echo $castSize?> + "&" + $("input").filter(function(index){return $(this).val() != "";}).serialize() + "&" + $("select").serialize();
       console.log(data);
@@ -30,6 +32,12 @@
 <body style="height: 100%; overflow: auto;">
     <form action="construct.php" method="post" id="castForm">
         <div style="height:100%">
+            <h1 style="text-align: center;">Cast Creation</h1>
+            <ul>
+                <li>Blank nickname fields will default to the value of the name field.</li>
+                <li>Blank numerical stat fields will default to 5.</li>
+                <li>Images will be generated automatically for characters who haven't been provided with one.</li>
+            </ul>
             <div class="container">
         <?php
             for($i = 0; $i < $castSize; $i+=3){
@@ -65,22 +73,22 @@
                                 </select>
                                 <br>
                                 Strength (1-10):&nbsp;
-                                <input type="number" id="castStrength<?=$i+$j?>" name="castStrength<?=$i+$j?>">
+                                <input type="number" id="castStrength<?=$i+$j?>" name="castStrength<?=$i+$j?>" min="1" max="10">
                                 <br>
                                 HP:
-                                <input type="number" id="castHealth<?=$i+$j?>" name="castHealth<?=$i+$j?>">
+                                <input type="number" id="castHealth<?=$i+$j?>" name="castHealth<?=$i+$j?>" min="1" max="9999">
                                 <br>
                                 Dexterity (1-10):&nbsp;
-                                <input type="number" id="castDex<?=$i+$j?>" name="castDex<?=$i+$j?>">
+                                <input type="number" id="castDex<?=$i+$j?>" name="castDex<?=$i+$j?>" min="1" max="10">
                                 <br>
                                 Intelligence (1-10):&nbsp;
-                                <input type="number" id="castInt<?=$i+$j?>" name="castInt<?=$i+$j?>">
+                                <input type="number" id="castInt<?=$i+$j?>" name="castInt<?=$i+$j?>" min="1" max="10">
                                 <br>
                                 Charisma (1-10):&nbsp;
-                                <input type="number" id="castCha<?=$i+$j?>" name="castCha<?=$i+$j?>">
+                                <input type="number" id="castCha<?=$i+$j?>" name="castCha<?=$i+$j?>" min="1" max="10">
                                 <br>
                                 Image URL:&nbsp;
-                                <input type="text" id="castImage<?=$i+$j?>" name="castImage<?=$i+$j?>">
+                                <input type="text" id="castImage<?=$i+$j?>" name="castImage<?=$i+$j?>" min="1" max="10">
                                 <br>
                                 <br>
                             </div>

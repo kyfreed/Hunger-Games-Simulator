@@ -145,7 +145,7 @@ function getCharacterByEvent($event){
         global $castObject;
         $characterArray = [];
         foreach($castObject as $character){
-            if(strpos($event, $character->nick) !== FALSE){
+            if(strpos($event, $character->nick . " ") !== FALSE  || strpos($event, $character->nick . ".") !== FALSE || strpos($event, $character->nick . ",") !== FALSE){
                 if(count($characterArray) == 0 || firstAfter($character->nick, $characterArray, $event) == -1){
                     array_push($characterArray, $character);
                 } else {
