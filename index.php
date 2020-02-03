@@ -7,8 +7,8 @@ and open the template in the editor.
 <html>
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="game.css?v=<?= filemtime("game.css")?>">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="game.css?v=<?= filemtime("game.css")?>">
         <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -50,6 +50,6 @@ and open the template in the editor.
             <br>
             <button type="button" class="btn btn-primary" onclick="createCast('castEdit.php')">Edit cast</button>
             <button type="button" class="btn btn-success" onclick="createCast('game.php')">Go!</button>
-            <footer style="position: absolute; bottom: 0px;">v1.1</footer>
+            <footer style="position: absolute; bottom: 0px;">v1.1.0.1</footer>
     </body>
 </html>

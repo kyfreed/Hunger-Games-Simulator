@@ -20,6 +20,8 @@ h1,h4{
     font-family:'SkipStd-B-AlphaNum' !important;
 }
 img {
-    border: 1px solid #ddd;
-    /*box-shadow: 5px -10px 8px #00010a;*/
+    border: 3px solid;
+}
+.btn{
+    font-family:'HummingStd-D-AlphaNum';
 }
