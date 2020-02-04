@@ -33,7 +33,9 @@ and open the template in the editor.
         <title>Hunger Games Simulator</title>
     </head>
     <body style="background-color: #228C22; height: 100%;">
-        <h1>Hunger Games Simulator</h1>
+        <div id="pageContainer">
+            <div id="contentWrap">
+                <h1>Hunger Games Simulator</h1>
         <h4>Inspired by <a href="http://brantsteele.net/hungergames" target="_blank" style="color: #8C4814;
     font-family:'SkipStd-B-AlphaNum'; text-decoration: underline;">BrantSteele</a></h4>
         <form action="cast.php" method="get">
@@ -50,6 +52,8 @@ and open the template in the editor.
             <br>
             <button type="button" class="btn btn-primary" onclick="createCast('castEdit.php')">Edit cast</button>
             <button type="button" class="btn btn-success" onclick="createCast('game.php')">Go!</button>
-            <footer style="position: absolute; bottom: 0px;">v1.1.0.1</footer>
+            <footer>v1.1.0.2</footer>
+            </div>
+        </div>
     </body>
 </html>
