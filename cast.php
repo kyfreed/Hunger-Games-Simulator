@@ -12,20 +12,33 @@ session_start();
   ?>
 <script>
     function next(){
-      var data = "castSize=" + <?php echo $castSize?> + "&" + $("input").filter(function(index){return $(this).val() != "";}).serialize() + "&" + $("select").serialize();
-      console.log(data);
-      $.ajax({
-            url: "construct.php",
+        var data = "castSize=" + <?php echo $castSize?> + "&" + $("input").filter(function(index){return $(this).val() != "";}).serialize() + "&" + $("select").serialize();
+        console.log(data);
+        $.ajax({
+              url: "construct.php",
+              async: false,
+              method: "POST",
+              data: data,
+              dataType: "text",
+              error: function(jqXHR, textStatus, errorThrown){
+                  console.log(textStatus);
+                  console.log(errorThrown);
+              }
+          });
+          window.location = "game.php";
+    }
+    function exportCharacter(num){
+        $.ajax({
+            url: "exportCharacter.php",
             async: false,
             method: "POST",
-            data: data,
-            dataType: "text",
+            data: "num=" + num + "&" + $("#character" + num + " input").filter(function(index){return $(this).val() != "";}).serialize() + "&" + $("#character" + num + " select").serialize(),
             error: function(jqXHR, textStatus, errorThrown){
                 console.log(textStatus);
                 console.log(errorThrown);
             }
         });
-        window.location = "game.php";
+        window.open("downloadCharacter.php", "_blank");
     }
 </script>
 <title>Hunger Games Simulator</title>
@@ -48,8 +61,8 @@ session_start();
                             for($j = 0; $j < 3; $j++){
                                 if($i + $j < $castSize){
                             ?>
-                            <div class="col-lg-4">
-                                <strong><u>Cast member <?=$i+$j+1?></u></strong>
+                            <div class="col-lg-4" id="<?php echo "character" . ($i + $j)?>">
+                                <strong><u>Cast member <?=$i+$j+1?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="exportCharacter(<?php echo $i + $j?>)">Export</button>
                                 <br>
                                 Name:&nbsp;
                                 <input type="text" id="castName<?=$i+$j?>" name="castName<?=$i+$j?>">

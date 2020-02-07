@@ -1,0 +1,35 @@
+<?php
+session_start();
+$num = $_POST['num'];
+$r = strval(rand(0, 255));
+$g = strval(rand(0, 255));
+$b = strval(rand(0, 255));
+$tempObject->name = htmlspecialchars($_POST["castName" . $num]);
+$tempObject->nick = ((array_key_exists("castNick" . $num, $_POST)) ? htmlspecialchars($_POST["castNick" . $num]) : $tempObject->name);
+$tempObject->gender = $_POST["castGender" . $num];
+$tempObject->disposition = $_POST["castDisposition" . $num];
+$tempObject->strength = ((array_key_exists("castStrength" . $num, $_POST)) ? (int) $_POST["castStrength" . $num] : 5);
+$tempObject->health = ((array_key_exists("castHealth" . $num, $_POST)) ? (int) $_POST["castHealth" . $num] : 5);
+$tempObject->maxStrength = $tempObject->strength;
+$tempObject->modifiedStrength = $tempObject->strength / 5;
+$tempObject->dexterity = ((array_key_exists("castDex" . $num, $_POST)) ? (int) $_POST["castDex" . $num] : 5);
+$tempObject->intelligence = ((array_key_exists("castInt" . $num, $_POST)) ? (int) $_POST["castInt" . $num] : 5);
+$tempObject->charisma = ((array_key_exists("castCha" . $num, $_POST)) ? (int) $_POST["castCha" . $num] : 5);
+$tempObject->defense = 0;
+$tempObject->image = ((array_key_exists("castImage" . $num, $_POST)) ? $_POST["castImage" . $num] : "generateImage.php?imageInitial=" . substr(htmlspecialchars($_POST["castName" . $num]),0,1) . "&r=" . $r . "&g=" . $g . "&b=" . $b);
+$tempObject->status = "Alive";
+$tempObject->actionTaken = "false";
+$tempObject->daysOfFood = 1;
+$tempObject->daysWithoutFood = 0;
+$tempObject->daysOfWater = 1;
+$tempObject->desiredItems = [];
+$tempObject->inventory = [];
+$tempObject->arrows = 0;
+$tempObject->explosivesPlanted = 0;
+$tempObject->memberOfAlliance = -1;
+$tempObject->equippedItem = "";
+$tempObject->kills = 0;
+$tempObject->daysAlive = 0;
+$tempObject->place = 0;
+$_SESSION['character'] = json_encode($tempObject);
+
