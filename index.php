@@ -90,6 +90,27 @@ and open the template in the editor.
             });
             window.location = url;
           }
+          function importCharacters(url){
+            var data = '';
+            $(".charImport").each(function(index, element){
+                data += $(this).attr("id") + "=" + $(this).val();
+                if(index < $('.charImport').length - 1){
+                    data += "&";
+                }
+            });
+            $.ajax({
+                url: "importCharacters.php",
+                async: false,
+                method: "POST",
+                data: data,
+                dataType: "text",
+                error: function(jqXHR, textStatus, errorThrown) {
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                }
+            });
+            window.location = url;
+          }
         </script>
         <title>Hunger Games Simulator</title>
     </head>
@@ -118,12 +139,18 @@ and open the template in the editor.
           <br>
           <span id="flip" style="cursor: pointer">More &nbsp; <span class="glyphicon glyphicon-chevron-down" id="arrow"></span></span>
           <div id="panel" hidden>
-              Merge &nbsp; <input type="number" id="castNumber"> &nbsp; casts/characters
+              Merge &nbsp; <input type="number" id="castNumber"> &nbsp; casts
               &nbsp; <button class="btn btn-primary" onclick="mergeCast('castEdit.php')">Edit cast</button>
               &nbsp; <button class="btn btn-success" onclick="mergeCast('game.php')">Go!</button>
-              <div id="castInput" class="container"></div>
+              <br>
+              <br>
+              Import &nbsp; <input type="number" id="charNumber"> &nbsp; characters
+              &nbsp; <button class="btn btn-primary" onclick="importCharacters('castEdit.php')">Edit cast</button>
+              &nbsp; <button class="btn btn-success" onclick="importCharacters('game.php')">Go!</button>
+              <br>
+              <div id="charInput" class="container"></div>
           </div>
-          <footer>v1.3</footer>
+          <footer>v1.2</footer>
         </div>
       </div>
     </body>
