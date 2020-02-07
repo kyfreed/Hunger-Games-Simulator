@@ -58,6 +58,19 @@ session_start();
         });
         window.location.reload();
     }
+    function exportCharacter(num){
+        $.ajax({
+            url: "exportCharacter.php",
+            async: false,
+            method: "POST",
+            data: "num=" + num + "&" + $("#character" + num + " input").filter(function(index){return $(this).val() != "";}).serialize() + "&" + $("#character" + num + " select").serialize(),
+            error: function(jqXHR, textStatus, errorThrown){
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+        window.open("downloadCharacter.php", "_blank");
+    }
 </script>
 <title>Hunger Games Simulator</title>
 <body style="height: 100%; overflow: auto;">
@@ -76,8 +89,8 @@ session_start();
                             for($j = 0; $j < 3; $j++){
                                 if($i + $j < $castObjectSize){
                             ?>
-                            <div class="col-lg-4">
-                                <strong><u>Cast member <?=$i+$j+1?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="deleteCharacter(<?php echo $i+$j?>)">Delete</button>
+                            <div class="col-lg-4" id="<?php echo "character" . ($i + $j)?>">
+                                <strong><u>Cast member <?=$i+$j+1?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="exportCharacter(<?php echo $i + $j?>)">Export</button>&nbsp;<button type="button" class="btn btn-primary" onclick="deleteCharacter(<?php echo $i+$j?>)">Delete</button>
                                 <br>
                                 <br>
                                 Name:&nbsp;
@@ -137,8 +150,8 @@ session_start();
                     $startValue++;
                     $fillCounter++;
                     ?>
-                            <div class="col-lg-4">
-                                <strong><u>Cast member <?=$i+1?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="deleteCharacter(<?php echo $i?>)">Delete</button>
+                            <div class="col-lg-4" id="<?php echo "character" . ($i)?>">
+                                <strong><u>Cast member <?=$i+1?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="exportCharacter(<?php echo $i?>)">Export</button>&nbsp;<button type="button" class="btn btn-primary" onclick="deleteCharacter(<?php echo $i?>)">Delete</button>
                                 <br>
                                 <br>
                                 Name:&nbsp;
@@ -195,8 +208,8 @@ session_start();
                             for($j = 0; $j < 3; $j++){
                                 if($i + $j < $startValue + $castSize - $castObjectSize - $fillCounter){
                             ?>
-                            <div class="col-lg-4">
-                                <strong><u>Cast member <?=$i+$j+1?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="deleteCharacter(<?php echo $i+$j?>)">Delete</button>
+                            <div class="col-lg-4" id="<?php echo "character" . ($i + $j)?>">
+                                <strong><u>Cast member <?=$i+$j+1?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="exportCharacter(<?php echo $i + $j?>)">Export</button>&nbsp;<button type="button" class="btn btn-primary" onclick="deleteCharacter(<?php echo $i+$j?>)">Delete</button>
                                 <br>
                                 <br>
                                 Name:&nbsp;

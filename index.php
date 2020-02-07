@@ -13,6 +13,47 @@ and open the template in the editor.
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"
           integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
         <script>
+          $(document).ready(function(){
+              $("#castNumber").val("0");
+              $("#charNumber").val("0");
+              $('#flip').click(function(){
+                  if($('#arrow').is('.glyphicon-chevron-down')){
+                      $('#arrow').removeClass('glyphicon-chevron-down');
+                      $('#arrow').addClass('glyphicon-chevron-up');
+                  } else {
+                      $('#arrow').removeClass('glyphicon-chevron-up');
+                      $('#arrow').addClass('glyphicon-chevron-down');
+                  }
+                  $('#panel').slideToggle();
+              });
+              
+              $('#castNumber').change(function(){
+                  var str = '';
+                  for(var i = 0; i < parseInt($('#castNumber').val()); i+=3){
+                      str += '<div class="row">';
+                      for(var j = 0; j < 3; j++){
+                          if(i + j < parseInt($('#castNumber').val())){
+                              str += '<div class="col-lg-4"><textarea id="cast' + (i + j) + '" class="castMerge" rows="25" cols="25"></textarea></div>'; 
+                          }
+                      }
+                      str += '</div>';
+                  }
+                  document.getElementById('castInput').innerHTML = str;
+              });
+              $('#charNumber').change(function(){
+                  var str = '';
+                  for(var i = 0; i < parseInt($('#charNumber').val()); i+=3){
+                      str += '<div class="row">';
+                      for(var j = 0; j < 3; j++){
+                          if(i + j < parseInt($('#charNumber').val())){
+                              str += '<div class="col-lg-4"><textarea id="char' + (i + j) + '" class="charImport" rows="25" cols="25"></textarea></div>'; 
+                          }
+                      }
+                      str += '</div>';
+                  }
+                  document.getElementById('charInput').innerHTML = str;
+              });
+          });
           function createCast(url) {
             var cookie;
             $.ajax({
@@ -25,6 +66,48 @@ and open the template in the editor.
                 console.log(textStatus);
                 console.log(errorThrown);
               }
+            });
+            window.location = url;
+          }
+          function mergeCast(url){
+            var data = '';
+            $(".castMerge").each(function(index, element){
+                data += $(this).attr("id") + "=" + $(this).val();
+                if(index < $('.castMerge').length - 1){
+                    data += "&";
+                }
+            });
+            $.ajax({
+                url: "castMerge.php",
+                async: false,
+                method: "POST",
+                data: data,
+                dataType: "text",
+                error: function(jqXHR, textStatus, errorThrown) {
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                }
+            });
+            window.location = url;
+          }
+          function importCharacters(url){
+            var data = '';
+            $(".charImport").each(function(index, element){
+                data += $(this).attr("id") + "=" + $(this).val();
+                if(index < $('.charImport').length - 1){
+                    data += "&";
+                }
+            });
+            $.ajax({
+                url: "importCharacters.php",
+                async: false,
+                method: "POST",
+                data: data,
+                dataType: "text",
+                error: function(jqXHR, textStatus, errorThrown) {
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                }
             });
             window.location = url;
           }
@@ -45,12 +128,28 @@ and open the template in the editor.
             <button type="submit" class="btn btn-primary">Create cast</button>
           </form>
           <br>
+          <br>
           <p>Or, paste cast data here:</p>
           <br>
           <textarea id="castObject" name="castObject" rows="25" cols="25"></textarea>
           <br>
           <button type="button" class="btn btn-primary" onclick="createCast('castEdit.php')">Edit cast</button>
           <button type="button" class="btn btn-success" onclick="createCast('game.php')">Go!</button>
+          <br>
+          <br>
+          <span id="flip" style="cursor: pointer">More &nbsp; <span class="glyphicon glyphicon-chevron-down" id="arrow"></span></span>
+          <div id="panel" hidden>
+              Merge &nbsp; <input type="number" id="castNumber"> &nbsp; casts
+              &nbsp; <button class="btn btn-primary" onclick="mergeCast('castEdit.php')">Edit cast</button>
+              &nbsp; <button class="btn btn-success" onclick="mergeCast('game.php')">Go!</button>
+              <br>
+              <br>
+              Import &nbsp; <input type="number" id="charNumber"> &nbsp; characters
+              &nbsp; <button class="btn btn-primary" onclick="importCharacters('castEdit.php')">Edit cast</button>
+              &nbsp; <button class="btn btn-success" onclick="importCharacters('game.php')">Go!</button>
+              <br>
+              <div id="charInput" class="container"></div>
+          </div>
           <footer>v1.1.0.3</footer>
         </div>
       </div>
