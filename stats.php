@@ -34,16 +34,24 @@ crossorigin="anonymous"></script>
                 break;
             case "place":
                 if ($a->place == $b->place) {
-                    return 0;
+                    return ($a->orderMarker < $b->orderMarker) ? -1 : 1;
                 } else {
                     return ($a->place < $b->place) ? -1 : 1;
                 }
                 break;
             case "kills":
-                return ($a->kills > $b->kills) ? -1 : 1;
+                if ($a->kills == $b->kills) {
+                    return ($a->orderMarker < $b->orderMarker) ? -1 : 1;
+                } else {
+                    return ($a->kills > $b->kills) ? -1 : 1;
+                }
                 break;
             case "daysAlive":
-                return ($a->daysAlive > $b->daysAlive) ? -1 : 1;
+                if ($a->daysAlive == $b->daysAlive) {
+                    return ($a->orderMarker < $b->orderMarker) ? -1 : 1;
+                } else {
+                    return ($a->daysAlive > $b->daysAlive) ? -1 : 1;
+                }
         }
     }
 

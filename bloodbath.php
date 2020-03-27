@@ -220,6 +220,14 @@ function addItemToInventory($item, $character) {
     if ($item == "bow and quiver") {
         $character->arrows += 20;
     }
+    if ($item == "poison") {
+        for ($i = 0; $i < 3; $i++) {
+            array_push($character->inventory, "dose of poison");
+        }
+    }
+    while(in_array("poison", $character->inventory)){
+        $character->inventory = removeFromArray("poison", $character->inventory);
+    }
     $character->modifiedStrength = calculateModifiedStrength($character);
     return $events;
 }
@@ -295,28 +303,13 @@ $events += compareItems($items);
 ?>
 <div class="text-center" style="height:100%">
     <h1>Bloodbath</h1>
-<?php
+    <?php
 //print_r2($castObject);
-showEvents($events);
-?>
+    showEvents($events);
+    ?>
     <button class="btn btn-primary" onclick="next()">Continue</button>
 </div>
 <script>
-    function getCookie(cname) {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
     function next() {
         console.log(JSON.stringify(<?= json_encode($castObject) ?>));
         $.ajax({
