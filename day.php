@@ -19,25 +19,6 @@ $deadToday = json_decode($_COOKIE['deadToday']);
 $place = (int) $_COOKIE['place'];
 
 function beginningOfDay($character) {
-    $event = '';
-    if ($character->daysOfFood < 0) {
-        $character->daysWithoutFood++;
-    } else {
-        $character->daysOfFood--;
-        $character->inventory = removeFromArray("day's worth of rations", $character->inventory);
-    }
-    if ($character->daysWithoutFood > 1) {
-        $character->strength--;
-        $character->health -= 0.5;
-        $character->modifiedStrength = calculateModifiedStrength($character);
-        if ($character->health < 0) {
-            $event .= $character->nick . " starves to death.<br><br>";
-            $character->status = "Dead";
-            $character->place = $GLOBALS['place'] --;
-            $character->killedBy = "starvation";
-            array_push($GLOBALS['deadToday'], $character->nick);
-        }
-    }
     $character->daysOfWater--;
     if ($character->daysOfWater < 0) {
         $character->strength -= 1.5;
@@ -52,6 +33,25 @@ function beginningOfDay($character) {
     } else {
         if (in_array("canteen", $character->inventory)) {
             $character->inventory[array_search("canteen", $character->inventory)] = "empty canteen";
+        }
+    }
+    $event = '';
+    if ($character->daysOfFood < 0) {
+        $character->daysWithoutFood++;
+    } else {
+        $character->daysOfFood--;
+        $character->inventory = removeFromArray("day's worth of rations", $character->inventory);
+    }
+    if ($character->daysWithoutFood > 1) {
+        $character->strength--;
+        $character->health -= 0.5;
+        $character->modifiedStrength = calculateModifiedStrength($character);
+        if ($character->health < 0 && $character->status != "Dead") {
+            $event .= $character->nick . " starves to death.<br><br>";
+            $character->status = "Dead";
+            $character->place = $GLOBALS['place'] --;
+            $character->killedBy = "starvation";
+            array_push($GLOBALS['deadToday'], $character->nick);
         }
     }
     return $event;
@@ -89,7 +89,7 @@ function weightedActionChoice($character) {
         if ($numTargets >= 2) {
             $remainingTargets = $castObject;
             $i = 0;
-            while ($i < (int) substr($chosenAction, -1)) {
+            while ($i < $numTargets) {
                 $target = $remainingTargets[rand(0, count($remainingTargets) - 1)];
                 if (!(in_array($target, $targets) || $target->status == "Dead" || $target == $character)) {
                     array_push($targets, $target);

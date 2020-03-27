@@ -105,7 +105,6 @@ function compareItems($items) { //This function loops through all the items and 
         }
         $GLOBALS['place'] -= $deadNow;
     }
-    //setcookie("deadToday", json_encode($GLOBALS['deadToday']), 0, "/");
     return $events;
 }
 
@@ -304,7 +303,6 @@ $events += compareItems($items);
 <div class="text-center" style="height:100%">
     <h1>Bloodbath</h1>
     <?php
-//print_r2($castObject);
     showEvents($events);
     ?>
     <button class="btn btn-primary" onclick="next()">Continue</button>
