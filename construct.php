@@ -36,6 +36,8 @@ for($i = 0; $i < $castSize; $i++){
     $tempObject->daysAlive = 0;
     $tempObject->orderMarker = $i;
     $tempObject->place = 0;
+    $tempObject->poisonedDaysCounter = -1; //When someone gets poisoned, the amount of days they have to live is stored here. Is set to -1 when not poisoned.
+    $tempObject->typeOfPoison = "";
     array_push($castObject,clone $tempObject);
 }
 $_SESSION['castObject'] = json_encode($castObject);

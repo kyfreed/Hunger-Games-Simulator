@@ -19,6 +19,17 @@ $deadToday = json_decode($_COOKIE['deadToday']);
 $place = (int) $_COOKIE['place'];
 
 function beginningOfDay($character) {
+    $event = '';
+    if($character->poisonedDaysCounter > 0){
+        $character->poisonedDaysCounter--;
+        if($character->poisonedDaysCounter == 0){
+            $event .= $character->nick . " dies of " . $character->typeOfPoison . " poisoning.<br><br>";
+            $character->status = "Dead";
+            $character->place = $GLOBALS['place'] --;
+            $character->killedBy = $character->typeOfPoison . " poisoning";
+            array_push($GLOBALS['deadToday'], $character->nick);
+        }
+    }
     $character->daysOfWater--;
     if ($character->daysOfWater < 0) {
         $character->strength -= 1.5;
@@ -35,7 +46,6 @@ function beginningOfDay($character) {
             $character->inventory[array_search("canteen", $character->inventory)] = "empty canteen";
         }
     }
-    $event = '';
     if ($character->daysOfFood < 0) {
         $character->daysWithoutFood++;
     } else {
