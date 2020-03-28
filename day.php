@@ -278,7 +278,7 @@ function attackPlayer($character, $target) {
                     if ($character->health < 0) {
                         $target->kills++;
                         $character->killedBy = $target->nick;
-                        array_merge($target->inventory, $character->inventory);
+                        $target->inventory = array_merge($target->inventory, $character->inventory);
                         $target->arrows += $character->arrows;
                         foreach ($character->inventory as $item) {
                             if (!($item == "bow and quiver")) {
@@ -297,7 +297,7 @@ function attackPlayer($character, $target) {
     if ($target->health < 0) {
         $character->kills++;
         $target->killedBy = $character->nick;
-        array_merge($character->inventory, $target->inventory);
+        $character->inventory = array_merge($character->inventory, $target->inventory);
         $character->arrows += $target->arrows;
         foreach ($target->inventory as $item) {
             if (!($item == "bow and quiver")) {
@@ -320,7 +320,7 @@ function triggerExplosive($character, $targets) {
         $target->status = "Dead";
         $target->place = $GLOBALS['place'];
         $target->killedBy = $character->nick . "'s explosive";
-        array_merge($character->inventory, $target->inventory);
+        $character->inventory = array_merge($character->inventory, $target->inventory);
         $character->arrows += $target->arrows;
         foreach ($target->inventory as $item) {
             if (!($item == "bow and quiver")) {

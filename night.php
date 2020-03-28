@@ -39,7 +39,7 @@ function attackPlayer($character, $target) {
                 if ($character->health < 0) {
                     $target->kills++;
                     $character->killedBy = $target->nick;
-                    array_merge($target->inventory, $character->inventory);
+                    $target->inventory = array_merge($target->inventory, $character->inventory);
                     foreach ($character->inventory as $item) {
                         $event .= addItemToInventory($item, $target);
                     }
@@ -57,7 +57,7 @@ function attackPlayer($character, $target) {
     if ($target->health < 0) {
         $character->kills++;
         $target->killedBy = $character->nick;
-        array_merge($character->inventory, $target->inventory);
+        $character->inventory = array_merge($character->inventory, $target->inventory);
         foreach ($target->inventory as $item) {
             $event .= addItemToInventory($item, $character);
         }

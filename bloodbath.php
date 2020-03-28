@@ -92,7 +92,7 @@ function compareItems($items) { //This function loops through all the items and 
                 $fighter->killedBy = nameList(removeFromArray($fighter, $fightArray));
                 array_push($GLOBALS['deadToday'], $fighter->nick);
                 $fighter->desiredItems = [];
-                array_merge($strongestCharacter->inventory, $fighter->inventory);
+                $strongestCharacter->inventory = array_merge($strongestCharacter->inventory, $fighter->inventory);
                 foreach ($fighter->inventory as $item) {
                     if ($item != "backpack") {
                         addItemToInventory($item, $strongestCharacter);
