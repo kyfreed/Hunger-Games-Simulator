@@ -74,7 +74,7 @@ crossorigin="anonymous"></script>
         echo '<td>' . $castMember->kills . " kill" . ($castMember->kills != 1 ? "s" : "") . "</td>";
         echo '<td>' . $castMember->daysAlive . " day" . ($castMember->daysAlive != 1 ? "s" : "") . " survived</td>";
         echo '<td>' . $placeOrdinal . " place</td>";
-        if (property_exists($castMember, "killedBy")) {
+        if ($castMember->killedBy != "") {
             echo '<td>Killed by ' . $castMember->killedBy . '</td>';
         } else {
             echo '<td></td>';

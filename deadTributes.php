@@ -1,5 +1,10 @@
 <?php
+include('Character.php');
+include_once('utils.php');
 session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 ?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="deadTributes.css?v=<?= filemtime("deadTributes.css") ?>">
@@ -12,15 +17,9 @@ crossorigin="anonymous"></script>
     <body>
         <h1>Dead Tributes <?= $_SESSION['counter'] ?></h1>
         <?php
-
-        function print_r2($val) { //Prints an object to the page in a readable format.
-            echo '<pre>';
-            print_r($val);
-            echo '</pre>';
-        }
-
         $deadToday = $_SESSION['totalDead'];
-        $castObject = json_decode($_SESSION['castObject']);
+        $castObject = $_SESSION['castObject'];
+        
         if ($deadToday != array()) {
             echo count($deadToday) . " cannon shot" . ((count($deadToday) == 1) ? "" : "s") . " echo" . ((count($deadToday) == 1) ? "es" : "") . " in the distance.<br><br>";
         } else {

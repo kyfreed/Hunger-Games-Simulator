@@ -1,4 +1,5 @@
 <?php
+include_once('utils.php');
 session_start();
 ?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
@@ -8,13 +9,6 @@ session_start();
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
 crossorigin="anonymous"></script>
 <?php
-
-function print_r2($val) { //Prints an object to the page in a readable format.
-    echo '<pre>';
-    print_r($val);
-    echo '</pre>';
-}
-
 $castObject = json_decode($_SESSION["castObject"]);
 //print_r2($castObject);
 $castObjectSize = count($castObject);
