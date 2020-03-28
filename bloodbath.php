@@ -9,13 +9,11 @@ session_start();
 crossorigin="anonymous"></script>
 <title>Hunger Games Simulator</title>
 <?php
-$deadToday = [];
+$_SESSION['deadToday'] = [];
 $castObject = json_decode($_SESSION['castObject']);
 shuffle($castObject);
 $castSize = count($castObject);
-$place = (int) $_COOKIE['place'];
-
-//echo $place;
+$place = $_SESSION['place'];
 function f_rand($min = 0, $max = 1, $mul = 1000000) {
     if ($min > $max)
         return false;
@@ -90,7 +88,7 @@ function compareItems($items) { //This function loops through all the items and 
                 $deadNow++;
                 $fighter->place = $GLOBALS['place'];
                 $fighter->killedBy = nameList(removeFromArray($fighter, $fightArray));
-                array_push($GLOBALS['deadToday'], $fighter->nick);
+                array_push($_SESSION['deadToday'], $fighter->nick);
                 $fighter->desiredItems = [];
                 $strongestCharacter->inventory = array_merge($strongestCharacter->inventory, $fighter->inventory);
                 foreach ($fighter->inventory as $item) {
@@ -284,7 +282,7 @@ foreach ($castObject as $character) {
         $character->status = "Dead";
         $character->killedBy = (($fighter->gender == "m") ? "his" : "her") . " podium";
         $character->place = $GLOBALS['place'] --;
-        array_push($GLOBALS['deadToday'], $character->nick);
+        array_push($_SESSION['deadToday'], $character->nick);
         $character->desiredItems = [];
     }
     $runawayChance = [0.8, 0.65, 0.35, 0.15, 0.05];
@@ -324,8 +322,20 @@ $events += compareItems($items);
                 console.log(errorThrown);
             }
         });
-        document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday']) ?>';
-        document.cookie = "place=" + <?php echo $GLOBALS['place'] ?>;
+        $.ajax({
+            url: "editVariables.php",
+            async: false,
+            method: "POST",
+            data: "place=" + <?php echo $place?>,
+            dataType: "text",
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
         window.location = "day.php";
     }
 </script>

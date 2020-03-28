@@ -15,8 +15,8 @@ crossorigin="anonymous"></script>
 $castObject = json_decode($_SESSION['castObject']);
 shuffle($castObject);
 $castSize = count($castObject);
-$deadToday = json_decode($_COOKIE['deadToday']);
-$place = (int) $_COOKIE['place'];
+$_SESSION['deadToday'] = [];
+$place = $_SESSION['place'];
 
 function beginningOfDay($character) {
     $event = '';
@@ -27,7 +27,7 @@ function beginningOfDay($character) {
             $character->status = "Dead";
             $character->place = $GLOBALS['place'] --;
             $character->killedBy = $character->typeOfPoison . " poisoning";
-            array_push($GLOBALS['deadToday'], $character->nick);
+            array_push($_SESSION['deadToday'], $character->nick);
         }
     }
     $character->daysOfWater--;
@@ -39,7 +39,7 @@ function beginningOfDay($character) {
             $character->status = "Dead";
             $character->place = $GLOBALS['place'] --;
             $character->killedBy = "dehydration";
-            array_push($GLOBALS['deadToday'], $character->nick);
+            array_push($_SESSION['deadToday'], $character->nick);
         }
     } else {
         if (in_array("canteen", $character->inventory)) {
@@ -61,7 +61,7 @@ function beginningOfDay($character) {
             $character->status = "Dead";
             $character->place = $GLOBALS['place'] --;
             $character->killedBy = "starvation";
-            array_push($GLOBALS['deadToday'], $character->nick);
+            array_push($_SESSION['deadToday'], $character->nick);
         }
     }
     return $event;
@@ -327,7 +327,7 @@ function triggerExplosive($character, $targets) {
                 addItemToInventory($item, $character);
             }
         }
-        array_push($GLOBALS['deadToday'], $target->nick);
+        array_push($_SESSION['deadToday'], $target->nick);
     }
     $GLOBALS['place'] -= count($targets);
     $character->kills += count($targets);
@@ -458,7 +458,7 @@ foreach ($GLOBALS['castObject'] as $character) {
         }
     }
 }
-if ((int) $_COOKIE['counter'] > 1) {
+if ((int) $_SESSION['counter'] > 1) {
     foreach ($GLOBALS['castObject'] as $character) {
         if ($character->status == "Alive") {
             $sponsor = sponsor($character);
@@ -479,7 +479,7 @@ foreach ($GLOBALS['castObject'] as $character) {
             $fighter->status = "Dead";
             $deadNow++;
             $fighter->place = $GLOBALS['place'];
-            array_push($GLOBALS['deadToday'], $fighter->nick);
+            array_push($_SESSION['deadToday'], $fighter->nick);
         }
         if ($fighter->strength < 0) {
             $fighter->strength = 0;
@@ -489,7 +489,7 @@ foreach ($GLOBALS['castObject'] as $character) {
 }
 ?>
 <div class="text-center" style="height: 100%">
-    <h1>Day <?= $_COOKIE['counter'] ?></h1>
+    <h1>Day <?= $_SESSION['counter'] ?></h1>
     <?php
     showEvents($events);
     $nextDestination = 'deadTributes.php';
@@ -526,8 +526,20 @@ foreach ($GLOBALS['castObject'] as $character) {
                 console.log(errorThrown);
             }
         });
-        document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday']) ?>';
-        document.cookie = "place=" + <?php echo $GLOBALS['place'] ?>;
+        $.ajax({
+            url: "editVariables.php",
+            async: false,
+            method: "POST",
+            data: "place=" + <?php echo $place?>,
+            dataType: "text",
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
         window.location = "<?php echo $nextDestination; ?>";
     }
 </script>

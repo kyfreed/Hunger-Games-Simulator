@@ -10,7 +10,7 @@ crossorigin="anonymous"></script>
 <div class="text-center" style="height:100%; overflow: auto">
     <title>Hunger Games Simulator</title>
     <body>
-        <h1>Dead Tributes <?= $_COOKIE['counter'] ?></h1>
+        <h1>Dead Tributes <?= $_SESSION['counter'] ?></h1>
         <?php
 
         function print_r2($val) { //Prints an object to the page in a readable format.
@@ -19,7 +19,7 @@ crossorigin="anonymous"></script>
             echo '</pre>';
         }
 
-        $deadToday = json_decode($_COOKIE['deadToday']);
+        $deadToday = $_SESSION['totalDead'];
         $castObject = json_decode($_SESSION['castObject']);
         if ($deadToday != array()) {
             echo count($deadToday) . " cannon shot" . ((count($deadToday) == 1) ? "" : "s") . " echo" . ((count($deadToday) == 1) ? "es" : "") . " in the distance.<br><br>";
@@ -46,6 +46,16 @@ crossorigin="anonymous"></script>
             echo $nick . "<br><br>";
         }
         ?>
-        <button type="button" class="btn btn-primary" onclick="document.cookie = 'deadToday=[]'; window.location = 'night.php';">Continue</button>  
+        <button type="button" class="btn btn-primary" onclick="next();">Continue</button>  
 </div>
+<script>
+    function next() {
+        $.ajax({
+            url: "clearDead.php",
+            async: false,
+            method: "POST",
+        });
+        window.location = 'night.php';
+    }
+</script>
 </body>

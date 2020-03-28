@@ -16,9 +16,6 @@ $castSize = count($castObject);
         $("#castObject").val(<?= json_encode($_SESSION['castObject']) ?>);
     }
     function next() {
-        document.cookie = "deadToday=[]";
-        document.cookie = "counter=1";
-        document.cookie = "place=<?= $castSize ?>";
         window.location = 'bloodbath.php';
     }
 </script>

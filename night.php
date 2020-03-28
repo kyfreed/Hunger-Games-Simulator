@@ -14,8 +14,8 @@ $castObject = json_decode($_SESSION['castObject']);
 shuffle($castObject);
 //print_r2($castObject);
 $castSize = count($castObject);
-$deadToday = json_decode($_COOKIE['deadToday']);
-$place = (int) $_COOKIE['place'];
+$_SESSION['deadToday'] = [];
+$place = $_SESSION['place'];
 
 function goToSleep($character) {
     $character->status = "Asleep";
@@ -237,7 +237,7 @@ foreach ($GLOBALS['castObject'] as $character) {
             $fighter->status = "Dead";
             $fighter->place = $GLOBALS['place'];
             $deadNow++;
-            array_push($GLOBALS['deadToday'], $fighter->nick);
+            array_push($_SESSION['deadToday'], $fighter->nick);
         }
         if ($fighter->strength < 0) {
             $fighter->strength = 0;
@@ -247,7 +247,7 @@ foreach ($GLOBALS['castObject'] as $character) {
 }
 ?>
 <div class="text-center" style="height: 100%">
-    <h1>Night <?= $_COOKIE['counter'] ?></h1>
+    <h1>Night <?= $_SESSION['counter'] ?></h1>
     <?php
     showEvents($events);
     $nextDestination = 'day.php';
@@ -301,9 +301,20 @@ foreach ($GLOBALS['castObject'] as $character) {
                 console.log(errorThrown);
             }
         });
-        document.cookie = "deadToday=" + '<?php echo json_encode($GLOBALS['deadToday']) ?>';
-        document.cookie = "place=" + <?php echo $GLOBALS['place'] ?>;
-        document.cookie = "counter=" + String(parseInt(getCookie("counter")) + 1);
+        $.ajax({
+            url: "editVariables.php",
+            async: false,
+            method: "POST",
+            data: "place=" + <?php echo $place?> + "&counter=" + <?php echo $_SESSION['counter'] + 1?>,
+            dataType: "text",
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
         window.location = "<?php echo $nextDestination; ?>";
     }
 </script>
