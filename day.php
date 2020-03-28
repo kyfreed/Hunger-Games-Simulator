@@ -125,7 +125,7 @@ function weightedActionChoice($character) {
             $event .= lookForFood($character);
         }
     }
-    $character->actionTaken = true;
+    $character->actionTaken = "true";
     return $event;
 }
 
