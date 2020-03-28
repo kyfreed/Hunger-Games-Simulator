@@ -309,7 +309,6 @@ $events += compareItems($items);
 </div>
 <script>
     function next() {
-        console.log(JSON.stringify(<?= json_encode($castObject) ?>));
         $.ajax({
             url: "editFile.php",
             async: false,
