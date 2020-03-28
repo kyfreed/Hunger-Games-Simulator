@@ -458,7 +458,7 @@ foreach ($GLOBALS['castObject'] as $character) {
         }
     }
 }
-if ((int) $_COOKIE['counter'] > 1) {
+if ((int) $_SESSION['counter'] > 1) {
     foreach ($GLOBALS['castObject'] as $character) {
         if ($character->status == "Alive") {
             $sponsor = sponsor($character);
@@ -489,7 +489,7 @@ foreach ($GLOBALS['castObject'] as $character) {
 }
 ?>
 <div class="text-center" style="height: 100%">
-    <h1>Day <?= $_COOKIE['counter'] ?></h1>
+    <h1>Day <?= $_SESSION['counter'] ?></h1>
     <?php
     showEvents($events);
     $nextDestination = 'deadTributes.php';
@@ -530,7 +530,7 @@ foreach ($GLOBALS['castObject'] as $character) {
             url: "editVariables.php",
             async: false,
             method: "POST",
-            data: "deadToday=" + <?php echo json_encode($_SESSION['deadToday'])?> + "&place=" + <?php echo $_SESSION['place']?>,
+            data: "place=" + <?php echo $place?>,
             dataType: "text",
             success: function (response) {
                 console.log(response);

@@ -14,8 +14,6 @@ $castObject = json_decode($_SESSION['castObject']);
 shuffle($castObject);
 $castSize = count($castObject);
 $place = $_SESSION['place'];
-
-echo $place;
 function f_rand($min = 0, $max = 1, $mul = 1000000) {
     if ($min > $max)
         return false;
@@ -328,7 +326,7 @@ $events += compareItems($items);
             url: "editVariables.php",
             async: false,
             method: "POST",
-            data: "deadToday=" + <?php echo json_encode($_SESSION['deadToday'])?> + "&place=" + <?php echo $_SESSION['place']?>,
+            data: "place=" + <?php echo $place?>,
             dataType: "text",
             success: function (response) {
                 console.log(response);

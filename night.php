@@ -247,7 +247,7 @@ foreach ($GLOBALS['castObject'] as $character) {
 }
 ?>
 <div class="text-center" style="height: 100%">
-    <h1>Night <?= $_COOKIE['counter'] ?></h1>
+    <h1>Night <?= $_SESSION['counter'] ?></h1>
     <?php
     showEvents($events);
     $nextDestination = 'day.php';
@@ -305,7 +305,7 @@ foreach ($GLOBALS['castObject'] as $character) {
             url: "editVariables.php",
             async: false,
             method: "POST",
-            data: "deadToday=" + <?php echo json_encode($_SESSION['deadToday'])?> + "&place=" + <?php echo $_SESSION['place']?> + "&counter=" + <?php echo $_SESSION['counter'] + 1?>,
+            data: "place=" + <?php echo $place?> + "&counter=" + <?php echo $_SESSION['counter'] + 1?>,
             dataType: "text",
             success: function (response) {
                 console.log(response);
