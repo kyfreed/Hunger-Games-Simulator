@@ -1,4 +1,5 @@
 <?php
+include('Character.php');
 include_once('utils.php');
 session_start();
 ?>
@@ -9,13 +10,10 @@ session_start();
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
 crossorigin="anonymous"></script>
 <?php
-$castObject = json_decode($_SESSION["castObject"]);
+$castObject = $_SESSION["castObject"];
 //print_r2($castObject);
 $castObjectSize = count($castObject);
 $castSize = $castObjectSize;
-if ($_GET["castSize"] != "") {
-    $castSize = (int) $_GET["castSize"];
-}
 ?>
 <script>
     function next() {

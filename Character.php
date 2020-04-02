@@ -82,7 +82,7 @@ class Character {
 
     function addItemToInventory($item, $fillBackpack = false) {
         $events = '';
-        if($item == "backpack" && $fillBackpack){
+        if ($item == "backpack" && $fillBackpack) {
             $events .= $this->fillBackpack();
         }
         if ($item == "day's worth of rations") {
@@ -234,7 +234,7 @@ class Character {
         $events = [];
         $event = '';
         $arrowDamage = round(f_rand(0.75, 1.75), 2);
-        if (in_array("bow and quiver", $this->inventory) && $this->arrows > 0 && $this->strength <= 2.4) {
+        if (in_array("bow and quiver", $this->inventory) && $this->arrows > 0 && $this->strength <= 2.4 && $target->status != "Asleep") {
             $event .= $this->nick . " attempts to shoot " . $target->nick . " with an arrow.<br><br>";
             $this->arrows--;
             if ($this->dexterity * 0.12 > f_rand()) {
@@ -245,8 +245,8 @@ class Character {
                 $event .= "However, the arrow misses.<br><br>";
             }
         } else {
-            $event .= $this->nick . " attempts to attack " . $target->nick . (($this->equippedItem != "") ? " with " . $this->equippedItem : "") . ".<br><br>";
-            if (0.04 * $this->dexterity + 0.7 < f_rand() || 0.04 * $target->dexterity + 0.3 > f_rand()) {
+            $event .= $this->nick . (($target->status != "Asleep") ? " attempts to attack " : " attacks ") . $target->nick . (($this->equippedItem != "") ? " with " . $this->equippedItem : "") . (($target->status == "Asleep") ? " while " . (($target->gender == "m") ? "he" : "she") . " is sleeping" : "") . ".<br><br>";
+            if ((0.04 * $this->dexterity + 0.7 < f_rand() || 0.04 * $target->dexterity + 0.3 > f_rand()) && $target->status != "Asleep") {
                 $event .= "However, it does not connect.<br><br>";
                 if (0.3 * ($target->disposition - 2) > f_rand()) {
                     $event .= $target->nick . " prepares to retaliate!<br><br>";
@@ -265,7 +265,9 @@ class Character {
                     }
                 }
             } else {
-                $event .= (($this->gender == "m") ? "He" : "She") . " makes a successful attack.<br><br>";
+                if ($target->status != "Asleep") {
+                    $event .= (($this->gender == "m") ? "He" : "She") . " makes a successful attack.<br><br>";
+                }
                 $target->strength -= $this->modifiedStrength - $target->defense;
                 $target->health -= $this->modifiedStrength - $target->defense;
                 $target->calculateModifiedStrength();

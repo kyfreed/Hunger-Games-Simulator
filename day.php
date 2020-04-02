@@ -20,7 +20,7 @@ $castSize = count($_SESSION['castObjectToday']);
 $_SESSION['deadToday'] = [];
 $_SESSION['placeToday'] = $_SESSION['place'];
 
-function beginningOfDay(Character $character) {
+function beginningOfDay(Character &$character) {
     $event = '';
     if ($character->poisonedDaysCounter > 0) {
         $character->poisonedDaysCounter--;
@@ -63,7 +63,7 @@ function beginningOfDay(Character $character) {
     return $event;
 }
 
-function sponsor(Character $character) {
+function sponsor(Character &$character) {
     $event = '';
     $sponsorItems = ["an explosive", "some water", "a first aid kit"];
     if (0.0625 * $character->charisma > f_rand()) {
@@ -74,7 +74,7 @@ function sponsor(Character $character) {
     return $event;
 }
 
-function weightedActionChoice(Character $character) {
+function weightedActionChoice(Character &$character) {
     global $castObject;
     $event = '';
     $attackChance = [0.05, 0.2125, 0.4, 0.6125, 0.85];

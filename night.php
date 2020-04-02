@@ -34,26 +34,30 @@ function weightedActionChoice(Character $character) {
         $target->actionTaken = "true";
     } else {
         $event .= $character->goToSleep();
+        print_r2($character->status);
     }
     $character->actionTaken = "true";
     return $event;
 }
-
+unset($character);
 $events = [];
-foreach ($_SESSION['castObjectToday'] as $character) {
-    if ($character->actionTaken == "false" && $character->status != "Dead" && playersAlive() > 1) {
-        $event = weightedActionChoice($character);
+foreach ($_SESSION['castObjectToday'] as $castMember) {
+    if ($castMember->actionTaken == "false" && $castMember->status != "Dead" && playersAlive() > 1) {
+        $event = weightedActionChoice($castMember);
         if (is_array($event)) {
             $events = array_merge($events, $event);
         } else {
             array_push($events, $event);
         }
     }
-    foreach ($_SESSION['castObjectToday'] as $fighter) {
-        if ($fighter->strength < 0) {
-            $fighter->strength = 0;
-        }
+    unset($castMember);
+}
+foreach ($_SESSION['castObjectToday'] as $fighter) {
+    if ($fighter->strength < 0) {
+        $fighter->strength = 0;
     }
+
+    print_r2($fighter->status);
 }
 ?>
 <div class="text-center" style="height: 100%">
@@ -68,6 +72,7 @@ foreach ($_SESSION['castObjectToday'] as $character) {
             $character->daysAlive++;
         }
     }
+    unset($character);
     if (playersAlive() == 1) {
         foreach ($_SESSION['castObjectToday'] as $character) {
             if ($character->status == "Alive") {
