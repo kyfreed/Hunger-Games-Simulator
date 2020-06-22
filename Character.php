@@ -55,7 +55,7 @@ class Character {
         $this->orderMarker = $orderMarker;
     }
 
-    function die($cause = null, $decrementPlace = true) {
+    function dead($cause = null, $decrementPlace = true) {
         $this->status = "Dead";
         $this->place = $_SESSION['placeToday'];
         if ($decrementPlace) {
@@ -259,7 +259,7 @@ class Character {
                         $this->calculateModifiedStrength();
                         if ($this->health < 0) {
                             array_push($events, $this->nick . " succumbs to " . (($this->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-                            $this->die();
+                            $this->dead();
                             $target->kill($this);
                         }
                     }
@@ -276,7 +276,7 @@ class Character {
         array_push($events, $event);
         if ($target->health < 0) {
             array_push($events, $target->nick . " succumbs to " . (($target->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-            $target->die($this->nick);
+            $target->dead($this->nick);
             $this->kills++;
             $target->killedBy = $this->nick;
             $this->inventory = array_merge($this->inventory, $target->inventory);
@@ -293,7 +293,7 @@ class Character {
     function triggerExplosive($targets) {
         $this->explosivesPlanted--;
         foreach ($targets as $target) {
-            $target->die($this->nick . "'s explosive", false);
+            $target->dead($this->nick . "'s explosive", false);
             $this->kill($target);
         }
         $_SESSION['placeToday'] -= count($targets);
@@ -306,7 +306,7 @@ class Character {
         $this->strength -= 3;
         $this->health -= 3;
         if ($this->health < 0) {
-            $this->die("a bear trap");
+            $this->dead("a bear trap");
             array_push($event, $this->nick . " succumbs to " . (($this->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
         }
         return $event;

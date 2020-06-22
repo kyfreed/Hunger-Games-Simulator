@@ -66,7 +66,7 @@ function compareItems($items) { //This function loops through all the items and 
         $deadNow = 0;
         foreach ($fightArray as $fighter) {
             if ($fighter->health < 0 && $fighter->status == "Alive") {
-                $fighter->die(nameList(removeFromArray($fighter, $fightArray)), false);
+                $fighter->dead(nameList(removeFromArray($fighter, $fightArray)), false);
                 array_push($events, $fighter->nick . " succumbs to " . (($fighter->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                 $deadNow++;
                 $fighter->desiredItems = [];
@@ -110,7 +110,7 @@ $events = [];
 foreach ($_SESSION['castObjectToday'] as $character) {
     if ($character->intelligence <= 3 && 1 - ($character->intelligence * 0.025) < f_rand()) {
         array_push($events, $character->nick . " steps off " . (($character->gender == "m") ? "his" : "her") . " podium too early and explodes.<br><br>");
-        $character->die((($character->gender == "m") ? "his" : "her") . "podium");
+        $character->dead((($character->gender == "m") ? "his" : "her") . "podium");
         $character->desiredItems = [];
     }
     $runawayChance = [0.8, 0.65, 0.35, 0.15, 0.05];

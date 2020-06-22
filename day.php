@@ -20,7 +20,7 @@ $castSize = count($_SESSION['castObjectToday']);
 $_SESSION['deadToday'] = [];
 $_SESSION['placeToday'] = $_SESSION['place'];
 
-function beginningOfDay(Character &$character) {
+function beginningOfDay(Character $character) {
     $event = '';
     if ($character->poisonedDaysCounter > 0) {
         $character->poisonedDaysCounter--;
@@ -38,7 +38,7 @@ function beginningOfDay(Character &$character) {
         $character->calculateModifiedStrength();
         if ($character->daysOfWater == -4) {
             $event .= $character->nick . " dies of thirst.<br><br>";
-            $character->die("dehydration");
+            $character->dead("dehydration");
         }
     } else {
         if (in_array("canteen", $character->inventory)) {
@@ -57,13 +57,13 @@ function beginningOfDay(Character &$character) {
         $character->calculateModifiedStrength();
         if ($character->health < 0 && $character->status != "Dead") {
             $event .= $character->nick . " starves to death.<br><br>";
-            $character->die("starvation");
+            $character->dead("starvation");
         }
     }
     return $event;
 }
 
-function sponsor(Character &$character) {
+function sponsor(Character $character) {
     $event = '';
     $sponsorItems = ["an explosive", "some water", "a first aid kit"];
     if (0.0625 * $character->charisma > f_rand()) {
@@ -74,7 +74,7 @@ function sponsor(Character &$character) {
     return $event;
 }
 
-function weightedActionChoice(Character &$character) {
+function weightedActionChoice(Character $character) {
     global $castObject;
     $event = '';
     $attackChance = [0.05, 0.2125, 0.4, 0.6125, 0.85];
@@ -126,36 +126,36 @@ function weightedActionChoice(Character &$character) {
 }
 
 $events = [];
-foreach ($_SESSION['castObjectToday'] as $character) {
-    if ($character->status == "Alive") {
-        $beginning = beginningOfDay($character);
+foreach ($GLOBALS['castObjectToday'] as $key => $val) {
+    if ($val->status == "Alive") {
+        $beginning = beginningOfDay($GLOBALS['castObjectToday'][$key]);
         if ($beginning != '') {
             array_push($events, $beginning);
         }
     }
 }
 if ((int) $_SESSION['counter'] > 1) {
-    foreach ($_SESSION['castObjectToday'] as $character) {
-        if ($character->status == "Alive") {
-            $sponsor = sponsor($character);
+    foreach ($GLOBALS['castObjectToday'] as $key => $val) {
+        if ($val->status == "Alive") {
+            $sponsor = sponsor($GLOBALS['castObjectToday'][$key]);
             if ($sponsor != '') {
                 array_push($events, $sponsor);
             }
         }
     }
 }
-foreach ($_SESSION['castObjectToday'] as $character) {
-    if ($character->actionTaken == "false" && $character->status == "Alive" && playersAlive() > 1) {
-        $event = weightedActionChoice($character);
+foreach ($GLOBALS['castObjectToday'] as $key => $val) {
+    if ($val->actionTaken == "false" && $val->status == "Alive" && playersAlive($GLOBALS['castObjectToday']) > 1) {
+        $event = weightedActionChoice($GLOBALS['castObjectToday'][$key]);
         if (is_array($event)) {
             $events = array_merge($events, $event);
         } else {
             array_push($events, $event);
         }
     }
-    foreach ($_SESSION['castObjectToday'] as $fighter) {
-        if ($fighter->strength < 0) {
-            $fighter->strength = 0;
+    foreach ($GLOBALS['castObjectToday'] as $key => $val) {
+        if ($val->strength < 0) {
+            $GLOBALS['castObjectToday'][$key]->strength = 0;
         }
     }
 }
@@ -163,13 +163,13 @@ foreach ($_SESSION['castObjectToday'] as $character) {
 <div class="text-center" style="height: 100%">
     <h1>Day <?= $_SESSION['counter'] ?></h1>
     <?php
-    showEvents($events);
+    showEvents($events,$GLOBALS['castObjectToday']);
     $nextDestination = 'deadTributes.php';
-    foreach ($_SESSION['castObjectToday'] as $character) {
-        $character->actionTaken = "false";
+    foreach ($GLOBALS['castObjectToday'] as $key => $val) {
+        $GLOBALS['castObjectToday'][$key]->actionTaken = "false";
     }
     if (playersAlive() == 1) {
-        foreach ($_SESSION['castObjectToday'] as $character) {
+        foreach ($GLOBALS['castObjectToday'] as $key => $val) {
             if ($character->status == "Alive") {
                 $character->place = 1;
             }
