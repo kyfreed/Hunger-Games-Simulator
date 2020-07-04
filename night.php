@@ -1,7 +1,6 @@
 <?php
 include('Character.php');
 include_once('utils.php');
-session_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -33,30 +32,22 @@ function weightedActionChoice($key) {
         $target->actionTaken = "true";
     } else {
         $event .= $_SESSION['castObjectToday'][$key]->goToSleep();
-        //print_r2($character->status);
     }
     $_SESSION['castObjectToday'][$key]->actionTaken = "true";
     return $event;
 }
 $events = [];
 foreach ($_SESSION['castObjectToday'] as $key => $val) {
-    if(isset($oldKey)){
-        print_r2("Status of previous iteration: " . $_SESSION['castObjectToday'][$oldKey]->status);
-    }
     if ($val->actionTaken == "false" && $val->status != "Dead" && playersAlive($_SESSION['castObjectToday']) > 1) {
-        print_r2("Before: $val->nick " . $_SESSION['castObjectToday'][$key]->status);
         $event = weightedActionChoice($key);
-        print_r2("After: $val->nick " . $_SESSION['castObjectToday'][$key]->status);
         if (is_array($event)) {
             $events = array_merge($events, $event);
         } else {
             array_push($events, $event);
         }
     }
-    $oldKey = $key;
 }
 foreach ($_SESSION['castObjectToday'] as $key => $val) {
-   print_r2("Outside of loop: $val->nick " . $_SESSION['castObjectToday'][$key]->status);
     if ($val->strength < 0) {
         $_SESSION['castObjectToday'][$key]->strength = 0;
     }

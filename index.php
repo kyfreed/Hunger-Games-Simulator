@@ -150,7 +150,7 @@ and open the template in the editor.
                     <br>
                     <div id="charInput" class="container"></div>
                 </div>
-                <footer>v1.2.1</footer>
+                <footer>v1.2.2</footer>
             </div>
         </div>
     </body>

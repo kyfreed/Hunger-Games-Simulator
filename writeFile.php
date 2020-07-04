@@ -1,7 +1,6 @@
 <?php
 include('Character.php');
 include_once('utils.php');
-session_start();
 $castJson = json_decode($_POST['castObject']);
 $castObject = [];
 foreach($castJson as $character){

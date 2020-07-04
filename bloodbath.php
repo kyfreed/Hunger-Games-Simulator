@@ -1,7 +1,6 @@
 <?php
 include('Character.php');
 include_once('utils.php');
-session_start();
 ?> 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="bloodbath.css?v=<?= filemtime("bloodbath.css") ?>">
@@ -12,7 +11,6 @@ crossorigin="anonymous"></script>
 <title>Hunger Games Simulator</title>
 <?php
 $_SESSION['castObjectToday'] = array_copy($_SESSION['castObject']);
-//print_r2($_SESSION['castObjectToday']);
 shuffle($_SESSION['castObjectToday']);
 $castSize = count($_SESSION['castObjectToday']);
 $_SESSION['deadToday'] = [];
@@ -53,7 +51,6 @@ function compareItems($items) { //This function loops through all the items and 
             shuffle($characterAttackLottery);
             $strongestCharacter = $characterAttackLottery[rand(0, count($characterAttackLottery) - 1)];
             $otherFighters = removeFromArray($strongestCharacter, $fightArray);
-            //print_r2($otherFighters);
             foreach ($fightArray as $fighter) {
                 $fighter->strength -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 0.75);
                 $fighter->health -= (avg_strength(removeFromArray($fighter, $fightArray)) - $fighter->defense) * ((count($otherFighters) == 1) ? 1 : 0.75);

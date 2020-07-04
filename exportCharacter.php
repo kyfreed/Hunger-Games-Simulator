@@ -1,5 +1,5 @@
 <?php
-session_start();
+include_once 'utils.php';
 $num = $_POST['num'];
 $r = strval(rand(0, 255));
 $g = strval(rand(0, 255));

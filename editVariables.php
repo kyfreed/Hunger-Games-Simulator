@@ -1,5 +1,5 @@
 <?php
-session_start();
+include_once 'utils.php';
 $_SESSION['castObject'] = $_SESSION['castObjectToday'];
 $_SESSION['totalDead'] = array_merge($_SESSION['totalDead'], $_SESSION['deadToday']);
 $_SESSION['place'] = $_SESSION['placeToday'];

@@ -1,7 +1,6 @@
 <?php
 include('Character.php');
 include_once('utils.php');
-session_start();
 ?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="game.css?<?= filemtime("game.css") ?>">
@@ -11,7 +10,6 @@ session_start();
 crossorigin="anonymous"></script>
 <?php
 $castObject = $_SESSION["castObject"];
-//print_r2($castObject);
 $castObjectSize = count($castObject);
 $castSize = $castObjectSize;
 ?>

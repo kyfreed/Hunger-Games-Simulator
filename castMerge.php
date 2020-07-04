@@ -1,5 +1,5 @@
 <?php
-session_start();
+include_once 'utils.php';
 $castObject = json_decode($_POST['cast0']);
 for($i = 1; $i < count($_POST); $i++){
     $castObject = array_merge($castObject, json_decode($_POST['cast' . $i]));
