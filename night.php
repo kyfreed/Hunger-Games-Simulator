@@ -14,7 +14,7 @@ error_reporting(E_ALL);
 crossorigin="anonymous"></script>
 <title>Hunger Games Simulator</title>
 <?php
-$SESSION['castObjectToday'] = array_copy($_SESSION['castObject']);
+$_SESSION['castObjectToday'] = array_copy($_SESSION['castObject']);
 shuffle($_SESSION['castObjectToday']);
 $castSize = count($_SESSION['castObjectToday']);
 $_SESSION['deadToday'] = [];
@@ -23,30 +23,30 @@ $_SESSION['placeToday'] = $_SESSION['place'];
 function weightedActionChoice($key) {
     $event = '';
     $attackChance = [0.05, 0.15, 0.35, 0.65, 0.85];
-    if ($GLOBALS['castObjectToday'][$key]->strength < 1.5 && in_array("a first aid kit", $GLOBALS['castObjectToday'][$key]->inventory)) {
-        $event .= $GLOBALS['castObjectToday'][$key]->heal();
-    } else if ($attackChance[$GLOBALS['castObjectToday'][$key]->disposition - 1] > f_rand() && $GLOBALS['castObjectToday'][$key]->equippedItem != "") {
+    if ($_SESSION['castObjectToday'][$key]->strength < 1.5 && in_array("a first aid kit", $_SESSION['castObjectToday'][$key]->inventory)) {
+        $event .= $_SESSION['castObjectToday'][$key]->heal();
+    } else if ($attackChance[$_SESSION['castObjectToday'][$key]->disposition - 1] > f_rand() && $_SESSION['castObjectToday'][$key]->equippedItem != "") {
         do {
             $target = $_SESSION['castObjectToday'][round(rand(0, $GLOBALS['castSize'] - 1))];
-        } while ($target == $character || $target->status == "Dead");
-        $event = $character->attackPlayer($target);
+        } while ($target == $_SESSION['castObjectToday'][$key] || $target->status == "Dead");
+        $event = $_SESSION['castObjectToday'][$key]->attackPlayer($target);
         $target->actionTaken = "true";
     } else {
-        $event .= $GLOBALS['castObjectToday'][$key]->goToSleep();
+        $event .= $_SESSION['castObjectToday'][$key]->goToSleep();
         //print_r2($character->status);
     }
-    $GLOBALS['castObjectToday'][$key]->actionTaken = "true";
+    $_SESSION['castObjectToday'][$key]->actionTaken = "true";
     return $event;
 }
 $events = [];
-foreach ($GLOBALS['castObjectToday'] as $key => $val) {
+foreach ($_SESSION['castObjectToday'] as $key => $val) {
     if(isset($oldKey)){
-        print_r2("Status of previous iteration:" . $GLOBALS['castObjectToday'][$oldKey]->status);
+        print_r2("Status of previous iteration: " . $_SESSION['castObjectToday'][$oldKey]->status);
     }
-    if ($val->actionTaken == "false" && $val->status != "Dead" && playersAlive($GLOBALS['castObjectToday']) > 1) {
-        print_r2("Before: " . $GLOBALS['castObjectToday'][$key]->status);
+    if ($val->actionTaken == "false" && $val->status != "Dead" && playersAlive($_SESSION['castObjectToday']) > 1) {
+        print_r2("Before: $val->nick " . $_SESSION['castObjectToday'][$key]->status);
         $event = weightedActionChoice($key);
-        print_r2("After: " . $GLOBALS['castObjectToday'][$key]->status);
+        print_r2("After: $val->nick " . $_SESSION['castObjectToday'][$key]->status);
         if (is_array($event)) {
             $events = array_merge($events, $event);
         } else {
@@ -55,10 +55,10 @@ foreach ($GLOBALS['castObjectToday'] as $key => $val) {
     }
     $oldKey = $key;
 }
-foreach ($GLOBALS['castObjectToday'] as $key => $val) {
-   print_r2("Outside of loop: " . $GLOBALS['castObjectToday'][$key]->status);
+foreach ($_SESSION['castObjectToday'] as $key => $val) {
+   print_r2("Outside of loop: $val->nick " . $_SESSION['castObjectToday'][$key]->status);
     if ($val->strength < 0) {
-        $GLOBALS['castObjectToday'][$key]->strength = 0;
+        $_SESSION['castObjectToday'][$key]->strength = 0;
     }
 }
 ?>
@@ -67,18 +67,18 @@ foreach ($GLOBALS['castObjectToday'] as $key => $val) {
     <?php
     showEvents($events);
     $nextDestination = 'day.php';
-    foreach ($GLOBALS['castObjectToday'] as $key => $val) {
-        $GLOBALS['castObjectToday'][$key]->actionTaken = "false";
+    foreach ($_SESSION['castObjectToday'] as $key => $val) {
+        $_SESSION['castObjectToday'][$key]->actionTaken = "false";
         if ($val->status != "Dead") {
-            $GLOBALS['castObjectToday'][$key]->status = "Alive";
-            $GLOBALS['castObjectToday'][$key]->daysAlive++;
+            $_SESSION['castObjectToday'][$key]->status = "Alive";
+            $_SESSION['castObjectToday'][$key]->daysAlive++;
         }
     }
     unset($character);
-    if (playersAlive($GLOBALS['castObjectToday']) == 1) {
-        foreach ($GLOBALS['castObjectToday'] as $key => $val) {
+    if (playersAlive($_SESSION['castObjectToday']) == 1) {
+        foreach ($_SESSION['castObjectToday'] as $key => $val) {
             if ($val->status == "Alive") {
-                $GLOBALS['castObjectToday'][$key]->place = 1;
+                $_SESSION['castObjectToday'][$key]->place = 1;
             }
         }
         $nextDestination = 'winner.php';

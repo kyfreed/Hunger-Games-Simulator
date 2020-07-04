@@ -114,7 +114,6 @@ function playersAlive() {
     $alive = 0;
     foreach ($_SESSION['castObjectToday'] as $character) {
         if ($character->status != "Dead") {
-            $character->status = "Alive";
             $alive++;
         }
     }
