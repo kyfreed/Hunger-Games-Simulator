@@ -41,17 +41,17 @@ function weightedActionChoice($key) {
             $target = $_SESSION['castObjectToday'][round(rand(0, $GLOBALS['castSize'] - 1))];
         } while ($target == $_SESSION['castObjectToday'][$key] || $target->status == "Dead");
         $event = $_SESSION['castObjectToday'][$key]->attackPlayer($target);
-        $target->actionTaken = "true";
+        $target->actionTaken = true;
     } else {
         $event .= $_SESSION['castObjectToday'][$key]->goToSleep();
     }
-    $_SESSION['castObjectToday'][$key]->actionTaken = "true";
+    $_SESSION['castObjectToday'][$key]->actionTaken = true;
     return $event;
 }
 
 $events = [];
 foreach ($_SESSION['castObjectToday'] as $key => $val) {
-    if ($val->actionTaken == "false" && $val->status != "Dead" && playersAlive($_SESSION['castObjectToday']) > 1) {
+    if (!$val->actionTaken && $val->status != "Dead" && playersAlive($_SESSION['castObjectToday']) > 1) {
         $event = weightedActionChoice($key);
         if (is_array($event)) {
             $events = array_merge($events, $event);
@@ -72,7 +72,7 @@ foreach ($_SESSION['castObjectToday'] as $key => $val) {
     showEvents($events);
     $nextDestination = 'day.php';
     foreach ($_SESSION['castObjectToday'] as $key => $val) {
-        $_SESSION['castObjectToday'][$key]->actionTaken = "false";
+        $_SESSION['castObjectToday'][$key]->actionTaken = false;
         if ($val->status != "Dead") {
             $_SESSION['castObjectToday'][$key]->status = "Alive";
             $_SESSION['castObjectToday'][$key]->daysAlive++;

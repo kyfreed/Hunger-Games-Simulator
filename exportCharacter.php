@@ -18,7 +18,7 @@ $tempObject->charisma = ((array_key_exists("castCha" . $num, $_POST)) ? (int) $_
 $tempObject->defense = 0;
 $tempObject->image = ((array_key_exists("castImage" . $num, $_POST)) ? $_POST["castImage" . $num] : "generateImage.php?imageInitial=" . substr(htmlspecialchars($_POST["castName" . $num]),0,1) . "&r=" . $r . "&g=" . $g . "&b=" . $b);
 $tempObject->status = "Alive";
-$tempObject->actionTaken = "false";
+$tempObject->actionTaken = false;
 $tempObject->daysOfFood = 1;
 $tempObject->daysWithoutFood = 0;
 $tempObject->daysOfWater = 1;

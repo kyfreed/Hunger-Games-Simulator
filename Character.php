@@ -19,7 +19,7 @@ class Character {
     public $defense = 0;
     public $image;
     public $status = "Alive";
-    public $actionTaken = "false";
+    public $actionTaken = false;
     public $daysOfFood = 1; //daysofFood and daysofWater are set to 1 so that characters don't immediately begin starving after the Bloodbath.
     public $daysWithoutFood = 0;
     public $daysOfWater = 1;

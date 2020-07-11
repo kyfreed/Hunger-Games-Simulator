@@ -116,7 +116,7 @@ function weightedActionChoice(Character $character) {
             }
             $event .= $character->triggerExplosive($targets);
             foreach ($targets as $target) {
-                $target->actionTaken = "true";
+                $target->actionTaken = true;
             }
         }
     } else if ($attackChance[$character->disposition - 1] > f_rand()) {
@@ -124,7 +124,7 @@ function weightedActionChoice(Character $character) {
             $target = $_SESSION['castObjectToday'][round(rand(0, $GLOBALS['castSize'] - 1))];
         } while ($target == $character || $target->status != "Alive");
         $event = $character->attackPlayer($target);
-        $target->actionTaken = "true";
+        $target->actionTaken = true;
     } else {
         if (($character->daysOfFood / $character->daysOfWater) * 0.5 > f_rand()) {
             $event .= $character->lookForWater();
@@ -132,7 +132,7 @@ function weightedActionChoice(Character $character) {
             $event .= $character->lookForFood();
         }
     }
-    $character->actionTaken = "true";
+    $character->actionTaken = true;
     return $event;
 }
 
@@ -156,7 +156,7 @@ if ((int) $_SESSION['counter'] > 1) {
     }
 }
 foreach ($_SESSION['castObjectToday'] as $key => $val) {
-    if ($val->actionTaken == "false" && $val->status == "Alive" && playersAlive($_SESSION['castObjectToday']) > 1) {
+    if (!$val->actionTaken && $val->status == "Alive" && playersAlive($_SESSION['castObjectToday']) > 1) {
         $event = weightedActionChoice($_SESSION['castObjectToday'][$key]);
         if (is_array($event)) {
             $events = array_merge($events, $event);
@@ -177,7 +177,7 @@ foreach ($_SESSION['castObjectToday'] as $key => $val) {
     showEvents($events, $_SESSION['castObjectToday']);
     $nextDestination = 'deadTributes.php';
     foreach ($_SESSION['castObjectToday'] as $key => $val) {
-        $_SESSION['castObjectToday'][$key]->actionTaken = "false";
+        $_SESSION['castObjectToday'][$key]->actionTaken = false;
     }
     if (playersAlive() == 1) {
         foreach ($_SESSION['castObjectToday'] as $key => $val) {
