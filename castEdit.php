@@ -77,56 +77,56 @@ $castSize = $castObjectSize;
 
             <div class="container">
                 <?php
-                for ($i = 0; $i < $castObjectSize; $i += 3) {
+                for ($i = 0; $i < $_GET['castSize']; $i += 3) {
                     ?>
 
                     <div class="row">
                         <?php
                         for ($j = 0; $j < 3; $j++) {
-                            if ($i + $j < $castObjectSize) {
+                            if ($i + $j < $_GET['castSize']) {
                                 ?>
                                 <div class="col-lg-4" id="<?php echo "character" . ($i + $j) ?>">
                                     <strong><u>Cast member <?= $i + $j + 1 ?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="exportCharacter(<?php echo $i + $j ?>)">Export</button>&nbsp;<button type="button" class="btn btn-primary" onclick="deleteCharacter(<?php echo $i + $j ?>)">Delete</button>
                                     <br>
                                     <br>
                                     Name:&nbsp;
-                                    <input type="text" id="castName<?= $i + $j ?>" name="castName<?= $i + $j ?>" value="<?php echo $castObject[$i + $j]->name ?>">
+                                    <input type="text" id="castName<?= $i + $j ?>" name="castName<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? $castObject[$i + $j]->name : "" ?>">
                                     <br>
                                     Nickname:&nbsp;
-                                    <input type="text" id="castNick<?= $i + $j ?>" name="castNick<?= $i + $j ?>" value="<?php echo (($castObject[$i + $j]->nick != $castObject[$i + $j]->name) ? $castObject[$i + $j]->nick : "") ?>">
+                                    <input type="text" id="castNick<?= $i + $j ?>" name="castNick<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? (($castObject[$i + $j]->nick != $castObject[$i + $j]->name) ? $castObject[$i + $j]->nick : "") : "" ?>">
                                     <br>
                                     Gender:&nbsp;
                                     <select id="castGender<?= $i + $j ?>" name="castGender<?= $i + $j ?>">
-                                        <option value="m" <?php echo ($castObject[$i + $j]->gender == 'm') ? 'selected' : '' ?>>M</option>
-                                        <option value="f" <?php echo ($castObject[$i + $j]->gender == 'f') ? 'selected' : '' ?>>F</option>
+                                        <option value="m" <?php echo ($i + $j < $castObjectSize) ? ($castObject[$i + $j]->gender == 'm') ? 'selected' : '' : '' ?>>M</option>
+                                        <option value="f" <?php echo ($i + $j < $castObjectSize) ? ($castObject[$i + $j]->gender == 'f') ? 'selected' : '' : '' ?>>F</option>
                                     </select>
                                     <br>
                                     Aggression:&nbsp;
                                     <select id="castDisposition<?= $i + $j ?>" name="castDisposition<?= $i + $j ?>">
-                                        <option value="1" <?php echo ($castObject[$i + $j]->disposition == 1) ? 'selected' : '' ?>>Very Passive</option>
-                                        <option value="2" <?php echo ($castObject[$i + $j]->disposition == 2) ? 'selected' : '' ?>>Passive</option>
-                                        <option value="3" <?php echo ($castObject[$i + $j]->disposition == 3) ? 'selected' : '' ?>>Neutral</option>
-                                        <option value="4" <?php echo ($castObject[$i + $j]->disposition == 4) ? 'selected' : '' ?>>Aggressive</option>
-                                        <option value="5" <?php echo ($castObject[$i + $j]->disposition == 5) ? 'selected' : '' ?>>Very Aggressive</option>
+                                        <option value="1" <?php echo ($i + $j < $castObjectSize) ? ($castObject[$i + $j]->disposition == 1) ? 'selected' : '' : '' ?>>Very Passive</option>
+                                        <option value="2" <?php echo ($i + $j < $castObjectSize) ? ($castObject[$i + $j]->disposition == 2) ? 'selected' : '' : '' ?>>Passive</option>
+                                        <option value="3" <?php echo ($i + $j < $castObjectSize) ? ($castObject[$i + $j]->disposition == 3) ? 'selected' : '' : '' ?>>Neutral</option>
+                                        <option value="4" <?php echo ($i + $j < $castObjectSize) ? ($castObject[$i + $j]->disposition == 4) ? 'selected' : '' : '' ?>>Aggressive</option>
+                                        <option value="5" <?php echo ($i + $j < $castObjectSize) ? ($castObject[$i + $j]->disposition == 5) ? 'selected' : '' : '' ?>>Very Aggressive</option>
                                     </select>
                                     <br>
                                     Strength (1-10):&nbsp;
-                                    <input type="number" id="castStrength<?= $i + $j ?>" name="castStrength<?= $i + $j ?>" value="<?php echo (($castObject[$i + $j]->strength != 5) ? $castObject[$i + $j]->strength : "") ?>">
+                                    <input type="number" id="castStrength<?= $i + $j ?>" name="castStrength<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? (($castObject[$i + $j]->strength != 5) ? $castObject[$i + $j]->strength : "") : "" ?>">
                                     <br>
                                     HP:
-                                    <input type="number" id="castHealth<?= $i + $j ?>" name="castHealth<?= $i + $j ?>" value="<?php echo (($castObject[$i + $j]->health != 5) ? $castObject[$i + $j]->health : "") ?>">
+                                    <input type="number" id="castHealth<?= $i + $j ?>" name="castHealth<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? (($castObject[$i + $j]->health != 5) ? $castObject[$i + $j]->health : "") : "" ?>">
                                     <br>
                                     Dexterity (1-10):&nbsp;
-                                    <input type="number" id="castDex<?= $i + $j ?>" name="castDex<?= $i + $j ?>" value="<?php echo (($castObject[$i + $j]->dexterity != 5) ? $castObject[$i + $j]->dexterity : "") ?>">
+                                    <input type="number" id="castDex<?= $i + $j ?>" name="castDex<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? (($castObject[$i + $j]->dexterity != 5) ? $castObject[$i + $j]->dexterity : "") : "" ?>">
                                     <br>
                                     Intelligence (1-10):&nbsp;
-                                    <input type="number" id="castInt<?= $i + $j ?>" name="castInt<?= $i + $j ?>" value="<?php echo (($castObject[$i + $j]->intelligence != 5) ? $castObject[$i + $j]->intelligence : "") ?>">
+                                    <input type="number" id="castInt<?= $i + $j ?>" name="castInt<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? (($castObject[$i + $j]->intelligence != 5) ? $castObject[$i + $j]->intelligence : "") : "" ?>">
                                     <br>
                                     Charisma (1-10):&nbsp;
-                                    <input type="number" id="castCha<?= $i + $j ?>" name="castCha<?= $i + $j ?>" value="<?php echo (($castObject[$i + $j]->charisma != 5) ? $castObject[$i + $j]->charisma : "") ?>">
+                                    <input type="number" id="castCha<?= $i + $j ?>" name="castCha<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? (($castObject[$i + $j]->charisma != 5) ? $castObject[$i + $j]->charisma : "") : "" ?>">
                                     <br>
                                     Image URL:&nbsp;
-                                    <input type="text" id="castImage<?= $i + $j ?>" name="castImage<?= $i + $j ?>" value="<?php echo ((strpos($castObject[$i + $j]->image, "generateImage.php") === FALSE) ? $castObject[$i + $j]->image : "") ?>">
+                                    <input type="text" id="castImage<?= $i + $j ?>" name="castImage<?= $i + $j ?>" value="<?php echo ($i + $j < $castObjectSize) ? ((strpos($castObject[$i + $j]->image, "generateImage.php") === FALSE) ? $castObject[$i + $j]->image : "") : "" ?>">
                                     <br>
                                     <br>
                                 </div>

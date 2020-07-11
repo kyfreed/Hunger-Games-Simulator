@@ -13,11 +13,27 @@ error_reporting(E_ALL);
 crossorigin="anonymous"></script>
 <?php
 $castObject = $_SESSION['castObject'];
+$necessaryCastData = [];
+$compressedCharacter = new stdClass();
+foreach ($castObject as $character){
+    $compressedCharacter->name = $character->name;
+    $compressedCharacter->nick = $character->nick;
+    $compressedCharacter->gender = $character->gender;
+    $compressedCharacter->disposition = $character->disposition;
+    $compressedCharacter->strength = $character->strength;
+    $compressedCharacter->health = $character->health;
+    $compressedCharacter->dexterity = $character->dexterity;
+    $compressedCharacter->intelligence = $character->intelligence;
+    $compressedCharacter->charisma = $character->charisma;
+    $compressedCharacter->image = $character->image;
+    $compressedCharacter->orderMarker = $character->orderMarker;
+    array_push($necessaryCastData, json_encode(clone $compressedCharacter));
+}
 $castSize = count($castObject);
 ?>
 <script>
     function showCastData() {
-        $("#castObject").val(<?= json_encode($_SESSION['castObject']) ?>);
+        $("#castObject").val("[" + <?= json_encode($necessaryCastData) ?> + "]");
     }
     function next() {
         window.location = 'bloodbath.php';

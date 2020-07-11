@@ -130,6 +130,9 @@ class Character {
         if (in_array("axe", $this->inventory) || in_array("mace", $this->inventory)) {
             $modStr = $this->strength + 5;
             $this->equippedItem = "an axe";
+        } else if (in_array("metal pipe", $this->inventory)){
+            $modStr = $this->strength / 2.5;
+            $this->equippedItem = "a metal pipe";
         } else if ($this->strength < 2.4 && in_array("a knife", $this->inventory) || in_array("knife", $this->inventory)) {
             $knives = 0;
             foreach ($this->inventory as $value) {
@@ -145,7 +148,7 @@ class Character {
                 $this->equippedItem = "a knife";
             }
         } else {
-            $modStr = $this->strength / 5;
+            $modStr = $this->strength / 10;
             $this->equippedItem = "";
         }
         $this->modifiedStrength = $modStr;
@@ -232,7 +235,7 @@ class Character {
     function attackPlayer(Character $target) {
         $events = [];
         $event = '';
-        $arrowDamage = round(f_rand(0.75, 1.75), 2);
+        $arrowDamage = round(f_rand(1, 2.25), 2);
         if (in_array("bow and quiver", $this->inventory) && $this->arrows > 0 && $this->strength <= 2.4 && $target->status != "Asleep") {
             $event .= $this->nick . " attempts to shoot " . $target->nick . " with an arrow.<br><br>";
             $this->arrows--;
@@ -248,7 +251,7 @@ class Character {
             if ((0.04 * $this->dexterity + 0.7 < f_rand() || 0.04 * $target->dexterity + 0.3 > f_rand()) && $target->status != "Asleep") {
                 $event .= "However, it does not connect.<br><br>";
                 if (0.3 * ($target->disposition - 2) > f_rand()) {
-                    $event .= $target->nick . " prepares to retaliate!<br><br>";
+                    $event .= $target->nick . " prepares to retaliate" . (($target->equippedItem != "") ? " with " . $target->equippedItem : "") . "!<br><br>";
                     if (0.04 * $target->dexterity + 0.75 < f_rand() || 0.04 * $this->dexterity + 0.25 > f_rand()) {
                         $event .= "Unfortunately, this fails as well.<br><br>";
                     } else {

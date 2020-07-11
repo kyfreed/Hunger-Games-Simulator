@@ -8,7 +8,7 @@ for($i = 0; $i < $castSize; $i++){
     $g = strval(rand(0, 255));
     $b = strval(rand(0, 255));
     $character = new Character(htmlspecialchars($_POST["castName" . $i]), //Name
-            ((array_key_exists("castNick" . $i, $_POST)) ? htmlspecialchars($_POST["castNick" . $i]) : $tempObject->name), //Nickname
+            ((array_key_exists("castNick" . $i, $_POST)) ? htmlspecialchars($_POST["castNick" . $i]) : $_POST["castName" . $i]), //Nickname
             $_POST["castGender" . $i], //Gender
             $_POST["castDisposition" . $i], //Disposition / Aggression
             ((array_key_exists("castStrength" . $i, $_POST)) ? (int) $_POST["castStrength" . $i] : 5), //Strength 

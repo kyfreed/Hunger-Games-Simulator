@@ -143,6 +143,8 @@ and open the template in the editor.
                     &nbsp; <button class="btn btn-primary" onclick="mergeCast('castEdit.php')">Edit cast</button>
                     &nbsp; <button class="btn btn-success" onclick="mergeCast('game.php')">Go!</button>
                     <br>
+                    <div id="castInput" class="container"></div>
+                    <br>
                     <br>
                     Import &nbsp; <input type="number" id="charNumber"> &nbsp; characters
                     &nbsp; <button class="btn btn-primary" onclick="importCharacters('castEdit.php')">Edit cast</button>
@@ -150,7 +152,7 @@ and open the template in the editor.
                     <br>
                     <div id="charInput" class="container"></div>
                 </div>
-                <footer>v1.2.2</footer>
+                <footer>v1.2.3</footer>
             </div>
         </div>
     </body>

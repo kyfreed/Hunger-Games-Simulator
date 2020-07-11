@@ -1,4 +1,5 @@
 <?php
+include 'Character.php';
 include_once 'utils.php';
 ?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
@@ -25,7 +26,7 @@ crossorigin="anonymous"></script>
         <option value="daysAlive">days survived</option>
     </select>
     <?php
-    $castObject = json_decode($_SESSION['castObject']);
+    $castObject = $_SESSION['castObject'];
 
     function cmp($a, $b) {
         switch ($_GET['sortBy']) {

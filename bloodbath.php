@@ -94,7 +94,10 @@ function initializeItems() {
     for ($i = 0; $i < round(0.35 * $castSize); $i++) {
         array_push($items, "backpack");
     }
-    for ($i = 0; $i < round(0.15 * $castSize); $i++) {
+    for ($i = 0; $i < round(0.1 * $castSize); $i++) {
+        array_push($items, "metal pipe");
+    }
+    for ($i = 0; $i < round(0.05 * $castSize); $i++) {
         array_push($items, "mace");
         array_push($items, "axe");
     }
