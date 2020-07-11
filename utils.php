@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
+
 function nameList($array) {
     if (count($array) == 1) {
         return $array[0]->nick;
@@ -123,10 +124,13 @@ function playersAlive() {
 
 function array_copy($arr) {
     $newArray = array();
-    foreach($arr as $key => $value) {
-        if(is_array($value)) $newArray[$key] = array_copy($value);
-        else if(is_object($value)) $newArray[$key] = clone $value;
-        else $newArray[$key] = $value;
+    foreach ($arr as $key => $value) {
+        if (is_array($value))
+            $newArray[$key] = array_copy($value);
+        else if (is_object($value))
+            $newArray[$key] = clone $value;
+        else
+            $newArray[$key] = $value;
     }
     return $newArray;
 }

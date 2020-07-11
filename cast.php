@@ -12,7 +12,7 @@ $castSize = $_GET['castSize'];
 ?>
 <script>
     function next() {
-        var data = "castSize=" + <?php echo $castSize ?> + "&" + $("input").filter(function (index) {
+        var data = "castSize=" + <?= $castSize ?> + "&" + $("input").filter(function (index) {
             return $(this).val() != "";
         }).serialize() + "&" + $("select").serialize();
         console.log(data);
@@ -65,8 +65,8 @@ $castSize = $_GET['castSize'];
                         for ($j = 0; $j < 3; $j++) {
                             if ($i + $j < $castSize) {
                                 ?>
-                                <div class="col-lg-4" id="<?php echo "character" . ($i + $j) ?>">
-                                    <strong><u>Cast member <?= $i + $j + 1 ?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="exportCharacter(<?php echo $i + $j ?>)">Export</button>
+                                <div class="col-lg-4" id="<?= "character" . ($i + $j) ?>">
+                                    <strong><u>Cast member <?= $i + $j + 1 ?></u></strong>&nbsp;<button type="button" class="btn btn-primary" onclick="exportCharacter(<?= $i + $j ?>)">Export</button>
                                     <br>
                                     Name:&nbsp;
                                     <input type="text" id="castName<?= $i + $j ?>" name="castName<?= $i + $j ?>">

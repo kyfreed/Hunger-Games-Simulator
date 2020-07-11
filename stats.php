@@ -10,7 +10,7 @@ include_once 'utils.php';
 crossorigin="anonymous"></script>
 <script>
     $(document).ready(function () {
-        $("#sortBy").val("<?php echo $_GET['sortBy'] ?>");
+        $("#sortBy").val("<?= $_GET['sortBy'] ?>");
         $("#sortBy").change(function () {
             window.location = "/stats.php?sortBy=" + $("#sortBy").val();
         });

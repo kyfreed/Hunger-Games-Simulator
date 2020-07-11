@@ -69,7 +69,7 @@ function compareItems($items) { //This function loops through all the items and 
                 $fighter->desiredItems = [];
                 $strongestCharacter->kill($fighter);
                 foreach (removeFromArray($fighter, $fightArray) as $victor) {
-                    if($victor != $strongestCharacter){
+                    if ($victor != $strongestCharacter) {
                         $victor->kills++;
                     }
                 }

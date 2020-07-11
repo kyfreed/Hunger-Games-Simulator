@@ -36,6 +36,7 @@ function weightedActionChoice($key) {
     $_SESSION['castObjectToday'][$key]->actionTaken = "true";
     return $event;
 }
+
 $events = [];
 foreach ($_SESSION['castObjectToday'] as $key => $val) {
     if ($val->actionTaken == "false" && $val->status != "Dead" && playersAlive($_SESSION['castObjectToday']) > 1) {
@@ -83,7 +84,7 @@ foreach ($_SESSION['castObjectToday'] as $key => $val) {
             url: "editVariables.php",
             async: false,
             method: "POST",
-            data: "counter=" + <?php echo $_SESSION['counter'] + 1 ?>,
+            data: "counter=" + <?= $_SESSION['counter'] + 1 ?>,
             dataType: "text",
             success: function (response) {
                 console.log(response);
@@ -93,6 +94,6 @@ foreach ($_SESSION['castObjectToday'] as $key => $val) {
                 console.log(errorThrown);
             }
         });
-        window.location = "<?php echo $nextDestination; ?>";
+        window.location = "<?= $nextDestination; ?>";
     }
 </script>

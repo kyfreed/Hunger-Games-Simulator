@@ -162,7 +162,7 @@ foreach ($_SESSION['castObjectToday'] as $key => $val) {
 <div class="text-center" style="height: 100%">
     <h1>Day <?= $_SESSION['counter'] ?></h1>
     <?php
-    showEvents($events,$_SESSION['castObjectToday']);
+    showEvents($events, $_SESSION['castObjectToday']);
     $nextDestination = 'deadTributes.php';
     foreach ($_SESSION['castObjectToday'] as $key => $val) {
         $_SESSION['castObjectToday'][$key]->actionTaken = "false";
@@ -195,6 +195,6 @@ foreach ($_SESSION['castObjectToday'] as $key => $val) {
                 console.log(errorThrown);
             }
         });
-        window.location = "<?php echo $nextDestination; ?>";
+        window.location = "<?= $nextDestination; ?>";
     }
 </script>

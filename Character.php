@@ -130,7 +130,7 @@ class Character {
         if (in_array("axe", $this->inventory) || in_array("mace", $this->inventory)) {
             $modStr = $this->strength + 5;
             $this->equippedItem = "an axe";
-        } else if (in_array("metal pipe", $this->inventory)){
+        } else if (in_array("metal pipe", $this->inventory)) {
             $modStr = $this->strength / 2.5;
             $this->equippedItem = "a metal pipe";
         } else if ($this->strength < 2.4 && in_array("a knife", $this->inventory) || in_array("knife", $this->inventory)) {

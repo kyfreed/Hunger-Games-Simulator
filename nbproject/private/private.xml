@@ -5,14 +5,17 @@
         <group>
             <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/night.php</file>
             <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/index.php</file>
-            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/day.php</file>
-            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/editVariables.php</file>
             <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/writeFile.php</file>
-            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/.gitignore</file>
-            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/bloodbath.php</file>
-            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/construct.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/castEdit.php</file>
             <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/Character.php</file>
             <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/utils.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/cast.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/day.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/editVariables.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/addCharacter.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/deleteCharacter.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/bloodbath.php</file>
+            <file>file:/C:/Users/15417/Documents/GitHub/Hunger-Games-Simulator/construct.php</file>
         </group>
     </open-files>
 </project-private>
