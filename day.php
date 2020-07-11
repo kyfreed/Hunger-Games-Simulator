@@ -5,13 +5,21 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ?>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="day.css?v=<?= filemtime("day.css") ?>">
-<script
-    src="https://code.jquery.com/jquery-3.4.1.min.js"
-    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-crossorigin="anonymous"></script>
-<title>Hunger Games Simulator</title>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="game.css?v=<?= filemtime("game.css") ?>">
+    <script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+    <style>
+        *{
+            background-color: #87CEEB;
+            color: #3D5E6B;
+        }
+    </style>
+    <title>Hunger Games Simulator</title>
+</head>
 <?php
 $SESSION['castObjectToday'] = array_copy($_SESSION['castObject']);
 shuffle($_SESSION['castObjectToday']);
@@ -86,10 +94,14 @@ function weightedActionChoice(Character $character) {
         $event .= $character->lookForFood();
     } else if ($character->strength < $character->maxStrength * 0.3 && in_array("a first aid kit", $character->inventory)) {
         $event .= $character->heal();
-    } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition - 2) > f_rand()) {
+    } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition - 2) > f_rand() && playersAlive() >= 3) {
         $event .= $character->plantExplosive();
     } else if ($character->explosivesPlanted > 0) {
-        $numTargets = rand(0, 4);
+        if (playersAlive() >= 5) {
+            $numTargets = rand(0, 4);
+        } else {
+            $numTargets = rand(0, playersAlive() - 1);
+        }
         $targets = [];
         if ($numTargets >= 2) {
             $remainingTargets = $_SESSION['castObjectToday'];

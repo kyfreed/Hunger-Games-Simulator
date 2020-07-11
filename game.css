@@ -16,10 +16,7 @@
   background-color: #228C22;
   color: #000000;
 }
-body{
-  background-color: #228C22;  
-}
-h1,h4{
+h1,h2,h3,h4,h5,h6{
     font-family:'SkipStd-B-AlphaNum';
 }
 img {
@@ -27,14 +24,11 @@ img {
     box-shadow: 5px -10px 8px rgba(0, 0, 0, 0.5);
 }
 textarea, input, select {
-    background-color: #fff !important;
-    color: #000 !important;
+    background-color: #fff;
+    color: #000;
 }
 a {
     color: #921BBF;
-}
-.btn{
-    font-family:'HummingStd-D-AlphaNum';
 }
 footer{
   position: absolute;
