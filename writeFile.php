@@ -5,7 +5,20 @@ include_once('utils.php');
 $castJson = json_decode($_POST['castObject']);
 $castObject = [];
 foreach ($castJson as $character) {
-    $char = new Character($character->name, $character->nick, $character->gender, $character->disposition, $character->strength, $character->health, $character->dexterity, $character->intelligence, $character->charisma, $character->image, $character->orderMarker);
+    $charAttributes = [
+        "name" => $character->name,
+        "nick" => $character->nick,
+        "gender" => $character->gender,
+        "disposition" => $character->disposition,
+        "strength" => $character->strength,
+        "health" => $character->health,
+        "dexterity" => $character->dexterity,
+        "intelligence" => $character->intelligence,
+        "charisma" => $character->charisma,
+        "image" => $character->image,
+        "orderMarker" => $character->orderMarker
+    ];
+    $char = new Character($charAttributes);
     array_push($castObject, clone $char);
 }
 $_SESSION['castObject'] = $castObject;

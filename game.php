@@ -40,9 +40,6 @@ $castSize = count($castObject);
     }
 </script>
 <title>Hunger Games Simulator</title>
-<?php
-
-?>
 <body>
     <div class="text-center">
         <h1>Cast</h1>

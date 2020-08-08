@@ -181,8 +181,8 @@ foreach ($_SESSION['castObjectToday'] as $key => $val) {
     }
     if (playersAlive() == 1) {
         foreach ($_SESSION['castObjectToday'] as $key => $val) {
-            if ($character->status == "Alive") {
-                $character->place = 1;
+            if ($val->status == "Alive") {
+                $_SESSION['castObjectToday'][$key]->place = 1;
             }
         }
         $nextDestination = 'winner.php';

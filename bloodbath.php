@@ -123,7 +123,7 @@ foreach ($_SESSION['castObjectToday'] as $character) {
         $character->desiredItems = [];
     }
     $runawayChance = [0.8, 0.65, 0.35, 0.15, 0.05];
-    if (1 - $runawayChance[$character->disposition - 1] < f_rand() && $character->status == "Alive") {
+    if ($runawayChance[$character->disposition - 1] > f_rand() && $character->status == "Alive") {
         array_push($events, $character->nick . " runs away from the Cornucopia.<br><br>");
     } else {
         for ($i = 0; $i < round(f_rand(1.5, 1.75) * $character->disposition); $i++) {

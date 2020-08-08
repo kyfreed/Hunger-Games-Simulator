@@ -36,22 +36,23 @@ class Character {
     public $poisonedDaysCounter = -1; //When someone gets poisoned, the amount of days they have to live is stored here. Is set to -1 when not poisoned.
     public $typeOfPoison = "";
     public $killedBy = "";
+    public $relationships = [];
 
-    function __construct($name, $nick, $gender, $disposition, $strength, $health, $dexterity, $intelligence, $charisma, $image, $orderMarker) {
-        $this->name = htmlspecialchars($name);
-        $this->nick = $nick;
-        $this->gender = $gender;
-        $this->disposition = $disposition;
-        $this->strength = $strength;
-        $this->maxStrength = $strength;
-        $this->health = $health;
-        $this->maxHealth = $health;
-        $this->modifiedStrength = $strength / 5;
-        $this->dexterity = $dexterity;
-        $this->intelligence = $intelligence;
-        $this->charisma = $charisma;
-        $this->image = $image;
-        $this->orderMarker = $orderMarker;
+    function __construct($charAttributes) {
+        $this->name = htmlspecialchars($charAttributes[name]);
+        $this->nick = $charAttributes["nick"];
+        $this->gender = $charAttributes["gender"];
+        $this->disposition = $charAttributes["disposition"];
+        $this->strength = $charAttributes["strength"];
+        $this->maxStrength = $charAttributes["strength"];
+        $this->health = $charAttributes["health"];
+        $this->maxHealth = $charAttributes["health"];
+        $this->modifiedStrength = $charAttributes["strength"] / 10;
+        $this->dexterity = $charAttributes["dexterity"];
+        $this->intelligence = $charAttributes["intelligence"];
+        $this->charisma = $charAttributes["charisma"];
+        $this->image = $charAttributes["image"];
+        $this->orderMarker = $charAttributes["orderMarker"];
     }
 
     function dead($cause = null, $decrementPlace = true) {
