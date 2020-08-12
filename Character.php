@@ -320,4 +320,40 @@ class Character {
         return $this->nick . " decides to go to sleep.<br><br>";
     }
 
+    function relationshipLevel(Character $character) {
+        if (array_key_exists($character->nick, $this->relationships)) {
+            return $this->relationships[$character->nick];
+        } else {
+            return $character->charisma;
+        }
+    }
+
+    function changeRelationshipLevel(Character $character, $amount) {
+        if (array_key_exists($character->nick, $this->relationships)) {
+            $this->relationships[$character->nick] += $amount;
+        } else {
+            $this->relationships[$character->nick] = $character->charisma + $amount;
+        }
+    }
+
+    function setRelationshipLevel(Character $character, $level) {
+        $this->relationships[$character->nick] = $level;
+    }
+
+    function resetRelationshipLevel(Character $character) {
+        $this->relationships[$character->nick] = $character->charisma;
+    }
+    
+    function chooseWeapon(){
+        
+    }
+    
+    function hasWeapon(){
+        foreach($this->inventory as $item){
+            if($item->type == "Weapon"){
+                return true;
+            }
+        }
+        return false;
+    }
 }
