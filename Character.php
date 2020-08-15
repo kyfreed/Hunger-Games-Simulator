@@ -343,17 +343,4 @@ class Character {
     function resetRelationshipLevel(Character $character) {
         $this->relationships[$character->nick] = $character->charisma;
     }
-    
-    function chooseWeapon(){
-        
-    }
-    
-    function hasWeapon(){
-        foreach($this->inventory as $item){
-            if($item->type == "Weapon"){
-                return true;
-            }
-        }
-        return false;
-    }
 }
