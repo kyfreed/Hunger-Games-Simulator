@@ -4,6 +4,8 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
 
+$_SESSION['items'] = json_decode(file_get_contents("items.json"));
+
 function nameList($array) {
     if (count($array) == 1) {
         return $array[0]->nick;

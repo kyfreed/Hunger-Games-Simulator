@@ -82,27 +82,23 @@ class Character {
 
     function addItemToInventory($item, $fillBackpack = false) {
         $events = '';
-        if ($item == "backpack" && $fillBackpack) {
+        if ($item->internalName == "backpack" && $fillBackpack) {
             $events .= $this->fillBackpack();
         }
-        if ($item == "day's worth of rations") {
+        if ($item->internalName == "day's worth of rations") {
             $this->daysOfFood++;
         }
-        if ($item == "canteen" || $item == "some water") {
+        if ($item->internalName == "canteen" || $item == "some water") {
             $this->daysOfWater++;
         }
-        if ($item == "bow and quiver") {
+        if ($item->internalName == "bow and quiver") {
             $this->arrows += 20;
         }
-        if ($item == "poison") {
+        if ($item->internalName == "cyanide") {
             for ($i = 0; $i < 3; $i++) {
-                array_push($this->inventory, "dose of poison");
+                array_push($this->inventory, $_SESSION['items']["cyanide"]);
             }
         }
-        while (in_array("poison", $this->inventory)) {
-            $this->inventory = removeFromArray("poison", $this->inventory);
-        }
-
         $this->calculateModifiedStrength();
         return $events;
     }
@@ -343,4 +339,42 @@ class Character {
     function resetRelationshipLevel(Character $character) {
         $this->relationships[$character->nick] = $character->charisma;
     }
+
+    function filterWeapons() {
+        $weaponCandidates = [];
+        $prefStat = ($this->strength > $this->dexterity ? "str" : "dex");
+        foreach ($this->inventory as $item) {
+            if ($item->type == "weapon" && $item->prefStat == $prefStat) {
+                array_push($weaponCandidates, $item);
+            }
+        }
+        return $weaponCandidates;
+    }
+
+    function hasWeapons() {
+        foreach ($this->inventory as $item) {
+            if ($item->type == "weapon") {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function calculateWeaponStrength($weapon) {
+        if (is_string($weapon->strength)) {
+            if (strpos($weapon->strength, "str+")) {
+                $strength = $this->strength + floatval(str_replace("str+", "", $weapon->strength));
+            } else if (strpos($weapon->strength, "str/")) {
+                $strength = $this->strength / floatval(str_replace("str+", "", $weapon->strength));
+            }
+        } else {
+            $strength = $weapon->strength;
+        }
+        return $strength;
+    }
+    
+    function chooseWeapon(){
+        $weaponCandidates = filterWeapons();
+    }
+
 }

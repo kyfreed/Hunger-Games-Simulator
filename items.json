@@ -48,7 +48,7 @@
         "prefStat": "str",
         "dualWielding": false,
         "attackVerb": null,
-        "killVerb": ["decapitates", "chops %c1 in half"]
+        "killVerb": ["decapitates", "chops %c0 in half"]
     },
     "mace": {
         "internalName": "mace",
@@ -63,7 +63,7 @@
         "prefStat": "str",
         "dualWielding": false,
         "attackVerb": null,
-        "killVerb": "bashes %c1's head in"
+        "killVerb": "bashes %c0's head in"
     },
     "backpack": {
         "internalName": "backpack",
@@ -89,7 +89,7 @@
         "prefStat": "str",
         "dualWielding": false,
         "attackVerb": null,
-        "killVerb": "bashes %c1's head in"
+        "killVerb": "bashes %c0's head in"
     },
     "fishingPole": {
         "internalName": "fishingPole",
