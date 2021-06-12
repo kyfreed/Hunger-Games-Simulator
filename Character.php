@@ -281,7 +281,7 @@ class Character {
         if ($target->health < 0) {
             array_push($events, $target->nick . " succumbs to " . (($target->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
             $target->dead($this->nick);
-            $this.kill($target);
+            $this->kill($target);
             $this->kills++;
             $target->killedBy = $this->nick;
             foreach ($target->inventory as $item) {
