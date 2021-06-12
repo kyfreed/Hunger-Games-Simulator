@@ -264,6 +264,7 @@ class Character {
                             array_push($events, $this->nick . " succumbs to " . (($this->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                             $this->dead();
                             $target->kill($this);
+                            $target->kills++;
                         }
                     }
                 }
@@ -280,10 +281,9 @@ class Character {
         if ($target->health < 0) {
             array_push($events, $target->nick . " succumbs to " . (($target->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
             $target->dead($this->nick);
+            $this.kill($target);
             $this->kills++;
             $target->killedBy = $this->nick;
-            $this->inventory = array_merge($this->inventory, $target->inventory);
-            $this->arrows += $target->arrows;
             foreach ($target->inventory as $item) {
                 if (!($item == "bow and quiver")) {
                     $event .= $this->addItemToInventory($item);
@@ -298,6 +298,7 @@ class Character {
         foreach ($targets as $target) {
             $target->dead($this->nick . "'s explosive", false);
             $this->kill($target);
+            $this->kills++;
         }
         $_SESSION['placeToday'] -= count($targets);
         return $this->nick . " sets off an explosive, killing " . nameList($targets) . ".<br><br>";
