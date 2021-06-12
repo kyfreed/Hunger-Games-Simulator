@@ -34,7 +34,7 @@ $_SESSION['placeToday'] = $_SESSION['place'];
 function weightedActionChoice($key) {
     $event = '';
     $attackChance = [0.05, 0.15, 0.35, 0.65, 0.85];
-    if ($_SESSION['castObjectToday'][$key]->strength < 1.5 && in_array("a first aid kit", $_SESSION['castObjectToday'][$key]->inventory)) {
+    if ($_SESSION['castObjectToday'][$key]->strength < 1.5 && in_array("a first aid kit", $_SESSION['castObjectToday'][$key]->inventory) && $character->daysWithoutFood == 0) {
         $event .= $_SESSION['castObjectToday'][$key]->heal();
     } else if ($attackChance[$_SESSION['castObjectToday'][$key]->disposition - 1] > f_rand() && $_SESSION['castObjectToday'][$key]->equippedItem != "") {
         do {
