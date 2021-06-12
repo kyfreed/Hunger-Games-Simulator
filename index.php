@@ -9,7 +9,7 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
               integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="game.css?v=<?= filemtime("game.css") ?>">
+        <link rel="stylesheet" type="text/css" href='game.css?v=<?= filemtime("game.css") ?>'>
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
         <script>
@@ -114,7 +114,7 @@ and open the template in the editor.
         </script>
         <title>Hunger Games Simulator</title>
     </head>
-    <body style="background-color: #228C22; height: 100%;">
+    <body style='background-color: #228C22; height: 100%;'>
         <div id="pageContainer">
             <div id="contentWrap">
                 <h1>Hunger Games Simulator</h1>
