@@ -34,7 +34,7 @@ function beginningOfDay(Character $character) {
         if ($character->poisonedDaysCounter == 0) {
             $event .= $character->nick . " dies of " . $character->typeOfPoison . " poisoning.<br><br>";
             $character->status = "Dead";
-            $character->place = $GLOBALS['place'] --;
+            $character->place = $GLOBALS['place']--;
             $character->killedBy = $character->typeOfPoison . " poisoning";
             array_push($_SESSION['deadToday'], $character->nick);
         }
@@ -97,26 +97,29 @@ function weightedActionChoice(Character $character) {
     } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition - 2) > f_rand() && playersAlive() >= 3) {
         $event .= $character->plantExplosive();
     } else if ($character->explosivesPlanted > 0) {
-        if (playersAlive() >= 5) {
-            $numTargets = rand(0, 4);
-        } else {
-            $numTargets = rand(0, playersAlive() - 1);
-        }
-        $targets = [];
-        if ($numTargets >= 2) {
-            $remainingTargets = $_SESSION['castObjectToday'];
-            $i = 0;
-            while ($i < $numTargets) {
-                $target = $remainingTargets[rand(0, count($remainingTargets) - 1)];
-                if (!(in_array($target, $targets) || $target->status == "Dead" || $target == $character)) {
-                    array_push($targets, $target);
-                    $remainingTargets = removeFromArray($target, $remainingTargets);
-                    $i++;
-                }
+        for ($i = 0; $i < $character->explosivesPlanted; $i++) {
+            if (playersAlive() >= 5) {
+                $numTargets = rand(0, 4);
+            } else {
+                $numTargets = rand(0, playersAlive() - 1);
             }
-            $event .= $character->triggerExplosive($targets);
-            foreach ($targets as $target) {
-                $target->actionTaken = true;
+            $targets = [];
+            if ($numTargets >= 2) {
+                $remainingTargets = $_SESSION['castObjectToday'];
+                $i = 0;
+                while ($i < $numTargets) {
+                    $target = $remainingTargets[rand(0, count($remainingTargets) - 1)];
+                    if (!(in_array($target, $targets) || $target->status == "Dead" || $target == $character)) {
+                        array_push($targets, $target);
+                        $remainingTargets = removeFromArray($target, $remainingTargets);
+                        $i++;
+                    }
+                }
+                $event .= $character->triggerExplosive($targets);
+                foreach ($targets as $target) {
+                    $target->actionTaken = true;
+                }
+                break;
             }
         }
     } else if ($attackChance[$character->disposition - 1] > f_rand()) {
