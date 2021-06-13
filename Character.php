@@ -78,6 +78,7 @@ class Character {
                 $this->addItemToInventory($item);
             }
         }
+        $this->explosivesPlanted += $target->explosivesPlanted;
     }
 
     function addItemToInventory($item, $fillBackpack = false) {
