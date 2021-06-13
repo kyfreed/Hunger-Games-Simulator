@@ -56,13 +56,14 @@ function beginningOfDay(Character $character) {
         $character->daysWithoutFood++;
     } else {
         $character->daysOfFood--;
+        $character->starvationDamage = 0;
         $character->inventory = removeFromArray("day's worth of rations", $character->inventory);
     }
     if ($character->daysWithoutFood > 1) {
         $character->strength--;
-        $character->health -= 0.5;
+        $character->starvationDamage += 0.5;
         $character->calculateModifiedStrength();
-        if ($character->health < 0 && $character->status != "Dead") {
+        if ($character->health - $character->starvationDamage <= 0 && $character->status != "Dead") {
             $event .= $character->nick . " starves to death.<br><br>";
             $character->dead("starvation");
         }

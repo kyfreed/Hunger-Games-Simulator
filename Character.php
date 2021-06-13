@@ -37,6 +37,7 @@ class Character {
     public $typeOfPoison = "";
     public $killedBy = "";
     public $relationships = [];
+    public $starvationDamage = 0;
 
     function __construct($charAttributes) {
         $this->name = htmlspecialchars($charAttributes[name]);
@@ -261,7 +262,7 @@ class Character {
                         $this->strength -= $target->modifiedStrength - $this->defense;
                         $this->health -= $target->modifiedStrength - $this->defense;
                         $this->calculateModifiedStrength();
-                        if ($this->health < 0) {
+                        if ($this->health - $this->starvationDamage <= 0) {
                             array_push($events, $this->nick . " succumbs to " . (($this->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
                             $this->dead();
                             $target->kill($this);
@@ -279,7 +280,7 @@ class Character {
             }
         }
         array_push($events, $event);
-        if ($target->health < 0) {
+        if ($target->health - $target->starvationDamage <= 0) {
             array_push($events, $target->nick . " succumbs to " . (($target->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
             $target->dead($this->nick);
             $this->kill($target);
@@ -310,7 +311,7 @@ class Character {
         array_push($event, $this->nick . " steps on a bear trap.<br><br>");
         $this->strength -= 3;
         $this->health -= 3;
-        if ($this->health < 0) {
+        if ($this->health - $this->starvationDamage <= 0) {
             $this->dead("a bear trap");
             array_push($event, $this->nick . " succumbs to " . (($this->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
         }
