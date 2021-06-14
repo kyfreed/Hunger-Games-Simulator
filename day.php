@@ -93,7 +93,7 @@ function weightedActionChoice(Character $character) {
         $event .= $character->lookForWater();
     } else if ($character->daysOfFood < 2) {
         $event .= $character->lookForFood();
-    } else if ($character->health < 1.5 && in_array("a first aid kit", $character->inventory) && $character->daysWithoutFood == 0) {
+    } else if ($character->health < 1.5 && in_array("a first aid kit", $character->inventory)) {
         $event .= $character->heal();
     } else if (in_array("an explosive", $character->inventory) && $character->disposition >= 3 && 0.3 * ($character->disposition - 2) > f_rand() && playersAlive() > 2) {
         $event .= $character->plantExplosive();
