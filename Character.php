@@ -262,12 +262,6 @@ class Character {
                         $this->strength -= $target->modifiedStrength - $this->defense;
                         $this->health -= $target->modifiedStrength - $this->defense;
                         $this->calculateModifiedStrength();
-                        if ($this->health - $this->starvationDamage <= 0) {
-                            array_push($events, $this->nick . " succumbs to " . (($this->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
-                            $this->dead();
-                            $target->kill($this);
-                            $target->kills++;
-                        }
                     }
                 }
             } else {
@@ -280,6 +274,12 @@ class Character {
             }
         }
         array_push($events, $event);
+        if ($this->health - $this->starvationDamage <= 0) {
+            array_push($events, $this->nick . " succumbs to " . (($this->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
+            $this->dead();
+            $target->kill($this);
+            $target->kills++;
+        }
         if ($target->health - $target->starvationDamage <= 0) {
             array_push($events, $target->nick . " succumbs to " . (($target->gender == "m") ? "his" : "her") . " injuries and dies.<br><br>");
             $target->dead($this->nick);
