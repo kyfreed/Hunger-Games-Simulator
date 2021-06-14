@@ -191,7 +191,7 @@ class Character {
                 }
             }
             if (in_array("fishing gear", $this->inventory)) {
-                $catchResults = floor((($this->dexterity * $this->intelligence) / 2) * f_rand(0.15, 0.45));
+                $catchResults = floor(($this->dexterity + $this->intelligence) * f_rand(0.2, 0.35));
                 $event .= (($this->gender == "m") ? "He" : "She") . " also fishes and gains " . (($catchResults > 0) ? $catchResults . (($catchResults == 1) ? " day's" : " days'") . " worth of food.<br><br>" : "nothing.<br><br>");
             }
         } else {
